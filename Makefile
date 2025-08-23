@@ -843,12 +843,8 @@ ifdef MACOS_CODESIGN_IDENT
 endif
 	echo -e $(BUILD_MSG) "dmg"
 	mkdir -p pkg
-	scripts/create-dmg/create-dmg \
-		--skip-jenkins \
-		pkg/Status.dmg \
-		$(MACOS_OUTER_BUNDLE) || true
-	# We ignore failure above create-dmg can't skip signing.
-	# It is just not signed, hence the next command should succeed.
+	nix shell .#dmgbuild \
+		-c dmgbuild -s scripts/dmg-settings.py -D app=$(MACOS_OUTER_BUNDLE) "Status" pkg/Status.dmg
 	mv "`ls pkg/*.dmg`" $(STATUS_CLIENT_DMG)
 
 ifdef MACOS_CODESIGN_IDENT
