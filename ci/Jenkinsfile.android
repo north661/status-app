@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.40'
+library 'status-jenkins-lib@v1.9.42'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -108,7 +108,7 @@ pipeline {
     stage('Build Android') {
       steps {
         script {
-        app.buildSignedAndroid(target='mobile-build PACKAGE_TYPE=' + env.PACKAGE_TYPE, verbose=params.VERBOSE)
+          status.buildSigned(platform='android', target='mobile-build PACKAGE_TYPE=' + env.PACKAGE_TYPE, verbose=params.VERBOSE)
         }
       }
     }

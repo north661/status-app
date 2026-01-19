@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-library 'status-jenkins-lib@v1.9.40'
+library 'status-jenkins-lib@v1.9.42'
 
 /* Options section can't access functions in objects. */
 def isPRBuild = utils.isPRBuild()
@@ -143,14 +143,14 @@ pipeline {
 
     stage('Package') {
       steps { script {
-        macos.bundle('pkg-macos')
+        status.buildSigned(platform='macos', target='pkg-macos')
       } }
     }
 
     stage('Notarize') {
       when { expression { utils.isReleaseBuild() } }
       steps { script {
-        macos.notarize()
+        status.notarize()
       } }
     }
 
