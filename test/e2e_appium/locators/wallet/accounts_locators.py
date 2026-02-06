@@ -18,6 +18,9 @@ class WalletAccountsLocators(BaseLocators):
     ACCOUNT_MENU_EDIT = BaseLocators.xpath(
         "//*[@content-desc='Edit' or contains(@resource-id,'AccountMenu-EditAction')]"
     )
+    ACCOUNT_MENU_COPY_ADDRESS = BaseLocators.xpath(
+        "//*[contains(@resource-id,'AccountMenu-CopyAddressAction')]"
+    )
     KEYCARD_POPUP = BaseLocators.xpath(
         "//*[contains(@resource-id,'KeycardPopup')]"
     )
@@ -61,5 +64,6 @@ class WalletAccountsLocators(BaseLocators):
         "[tid:walletHeaderButton]"
     )
     FOOTER_SEND = BaseLocators.content_desc_contains("[tid:walletFooterSendButton]")
+    FOOTER_RECEIVE = BaseLocators.resource_id_contains("walletFooterReceiveButton")
     FOOTER_BUY = BaseLocators.content_desc_contains("[tid:walletFooterBuyButton]")
     FOOTER_SWAP = BaseLocators.content_desc_contains("[tid:walletFooterSwapButton]")
