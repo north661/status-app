@@ -60,6 +60,15 @@ function Install-Dependencies {
     Scoop-Install 'protobuf'      '3.20.1'
     Scoop-Install 'openssl-lts'   '3.0.18'
     Scoop-Install 'inno-setup'    '6.5.4'
+    Scoop-Install 'msys2'         '2025-12-13'
+}
+
+function Install-MSYS2-Packages {
+    Write-Host "Installing MSYS2 MinGW64 packages..."
+    $msys2Bash = "C:\ProgramData\scoop\apps\msys2\current\usr\bin\bash.exe"
+    $packages = "mingw-w64-x86_64-rust mingw-w64-x86_64-postgresql"
+    & $msys2Bash -lc "pacman -S --noconfirm --needed $packages"
+    Write-Host "MSYS2 packages installed successfully."
 }
 
 function Install-Qt-SDK {
@@ -125,6 +134,7 @@ $QtVersion = "6.9.2"
 If ($MyInvocation.InvocationName -ne ".") {
     Install-Scoop
     Install-Dependencies
+    Install-MSYS2-Packages
     Install-Protobuf-Go
     Install-Qt-SDK
     Install-VC-BuildTools
