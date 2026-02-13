@@ -9641,19 +9641,14 @@
       <translation>Show address QR</translation>
     </message>
     <message>
-      <source>View activity</source>
-      <comment>FollowingAddressMenu</comment>
-      <translation>View activity</translation>
-    </message>
-    <message>
-      <source>Already in saved addresses</source>
-      <comment>FollowingAddressMenu</comment>
-      <translation>Already in saved addresses</translation>
-    </message>
-    <message>
       <source>Add to saved addresses</source>
       <comment>FollowingAddressMenu</comment>
       <translation>Add to saved addresses</translation>
+    </message>
+    <message>
+      <source>Remove from saved addresses</source>
+      <comment>FollowingAddressMenu</comment>
+      <translation>Remove from saved addresses</translation>
     </message>
   </context>
   <context>
@@ -9674,14 +9669,32 @@
       <translation>Your search contains invalid characters (use A-Z and 0-9, single whitespace, hyphens and underscores only)</translation>
     </message>
     <message>
-      <source>Your EFP onchain friends will appear here</source>
-      <comment>FollowingAddresses</comment>
-      <translation>Your EFP onchain friends will appear here</translation>
-    </message>
-    <message>
       <source>No following addresses found. Check spelling or whether the address is correct.</source>
       <comment>FollowingAddresses</comment>
       <translation>No following addresses found. Check spelling or whether the address is correct.</translation>
+    </message>
+    <message>
+      <source>No onchain follows yet. Find and follow Ethereum accounts on %1 to see them here.</source>
+      <comment>FollowingAddresses</comment>
+      <translation>No onchain follows yet. Find and follow Ethereum accounts on %1 to see them here.</translation>
+    </message>
+    <message>
+      <source>Ethereum Follow Protocol</source>
+      <comment>FollowingAddresses</comment>
+      <translation>Ethereum Follow Protocol</translation>
+    </message>
+  </context>
+  <context>
+    <name>FollowingAddressesDelegate</name>
+    <message>
+      <source>Remove from saved addresses</source>
+      <comment>FollowingAddressesDelegate</comment>
+      <translation>Remove from saved addresses</translation>
+    </message>
+    <message>
+      <source>Add to saved addresses</source>
+      <comment>FollowingAddressesDelegate</comment>
+      <translation>Add to saved addresses</translation>
     </message>
   </context>
   <context>
@@ -12484,14 +12497,14 @@
       <translation>Saved addresses</translation>
     </message>
     <message>
-      <source>EFP onchain friends</source>
-      <comment>LeftTabView</comment>
-      <translation>EFP onchain friends</translation>
-    </message>
-    <message>
       <source>Add account</source>
       <comment>LeftTabView</comment>
       <translation>Add account</translation>
+    </message>
+    <message>
+      <source>Onchain friends</source>
+      <comment>LeftTabView</comment>
+      <translation>Onchain friends</translation>
     </message>
   </context>
   <context>
@@ -14375,14 +14388,6 @@
       <source>Retry mint</source>
       <comment>MintedTokensView</comment>
       <translation>Retry mint</translation>
-    </message>
-  </context>
-  <context>
-    <name>MobileAddressBar</name>
-    <message>
-      <source>Search or enter address</source>
-      <comment>MobileAddressBar</comment>
-      <translation>Search or enter address</translation>
     </message>
   </context>
   <context>
@@ -17524,37 +17529,62 @@
       <translation>Enable access to your camera</translation>
     </message>
     <message>
-      <source>To scan a QR, Status needs&#xA;access to your webcam</source>
+      <source>Align the QR code within the frame to scan</source>
       <comment>QRCodeScanner</comment>
-      <translation>To scan a QR, Status needs&#xA;access to your webcam</translation>
+      <translation>Align the QR code within the frame to scan</translation>
     </message>
     <message>
-      <source>Camera access denied. Please enable it in system settings.</source>
+      <source>Scanned successfully</source>
       <comment>QRCodeScanner</comment>
-      <translation>Camera access denied. Please enable it in system settings.</translation>
+      <translation>Scanned successfully</translation>
     </message>
     <message>
-      <source>Ensure that the QR code is in focus to scan</source>
+      <source>To scan QR codes, add contacts, send funds to wallets, and sync apps.</source>
       <comment>QRCodeScanner</comment>
-      <translation>Ensure that the QR code is in focus to scan</translation>
+      <translation>To scan QR codes, add contacts, send funds to wallets, and sync apps.</translation>
+    </message>
+    <message>
+      <source>Open settings</source>
+      <comment>QRCodeScanner</comment>
+      <translation>Open settings</translation>
     </message>
   </context>
   <context>
     <name>QRCodeScannerDialog</name>
     <message>
-      <source>Scan QR</source>
+      <source>QR Scanner</source>
       <comment>QRCodeScannerDialog</comment>
-      <translation>Scan QR</translation>
+      <translation>QR Scanner</translation>
     </message>
     <message>
-      <source>Status doesn&#39;t understand the QR code.</source>
+      <source>Contact request</source>
       <comment>QRCodeScannerDialog</comment>
-      <translation>Status doesn&#39;t understand the QR code.</translation>
+      <translation>Contact request</translation>
     </message>
     <message>
-      <source>Scanned successfully</source>
+      <source>Join communities</source>
       <comment>QRCodeScannerDialog</comment>
-      <translation>Scanned successfully</translation>
+      <translation>Join communities</translation>
+    </message>
+    <message>
+      <source>Send tokens</source>
+      <comment>QRCodeScannerDialog</comment>
+      <translation>Send tokens</translation>
+    </message>
+    <message>
+      <source>Open WEB links</source>
+      <comment>QRCodeScannerDialog</comment>
+      <translation>Open WEB links</translation>
+    </message>
+    <message>
+      <source>WalletConnect to connect dApps</source>
+      <comment>QRCodeScannerDialog</comment>
+      <translation>WalletConnect to connect dApps</translation>
+    </message>
+    <message>
+      <source>We could not read that QR code.</source>
+      <comment>QRCodeScannerDialog</comment>
+      <translation>We could not read that QR code.</translation>
     </message>
   </context>
   <context>
@@ -17879,11 +17909,6 @@
       <translation>Remove %1</translation>
     </message>
     <message>
-      <source>Are you sure you want to remove %1 from your saved addresses? Transaction history relating to this address will no longer be labelled %1.</source>
-      <comment>RemoveSavedAddressPopup</comment>
-      <translation>Are you sure you want to remove %1 from your saved addresses? Transaction history relating to this address will no longer be labelled %1.</translation>
-    </message>
-    <message>
       <source>Cancel</source>
       <comment>RemoveSavedAddressPopup</comment>
       <translation>Cancel</translation>
@@ -17892,6 +17917,11 @@
       <source>Remove saved address</source>
       <comment>RemoveSavedAddressPopup</comment>
       <translation>Remove saved address</translation>
+    </message>
+    <message>
+      <source>Are you sure you want to remove %1 from your saved addresses?</source>
+      <comment>RemoveSavedAddressPopup</comment>
+      <translation>Are you sure you want to remove %1 from your saved addresses?</translation>
     </message>
   </context>
   <context>
@@ -18162,14 +18192,14 @@
       <translation>Show address QR</translation>
     </message>
     <message>
-      <source>View activity</source>
-      <comment>SavedAddressesDelegate</comment>
-      <translation>View activity</translation>
-    </message>
-    <message>
       <source>Remove saved address</source>
       <comment>SavedAddressesDelegate</comment>
       <translation>Remove saved address</translation>
+    </message>
+    <message>
+      <source>Add to saved addresses</source>
+      <comment>SavedAddressesDelegate</comment>
+      <translation>Add to saved addresses</translation>
     </message>
   </context>
   <context>
@@ -22930,19 +22960,19 @@
   <context>
     <name>WalletFollowingAddressesHeader</name>
     <message>
-      <source>Add via EFP</source>
-      <comment>WalletFollowingAddressesHeader</comment>
-      <translation>Add via EFP</translation>
-    </message>
-    <message>
-      <source>EFP onchain friends</source>
-      <comment>WalletFollowingAddressesHeader</comment>
-      <translation>EFP onchain friends</translation>
-    </message>
-    <message>
       <source>Last refreshed %1</source>
       <comment>WalletFollowingAddressesHeader</comment>
       <translation>Last refreshed %1</translation>
+    </message>
+    <message>
+      <source>Find a friend</source>
+      <comment>WalletFollowingAddressesHeader</comment>
+      <translation>Find a friend</translation>
+    </message>
+    <message>
+      <source>Onchain friends</source>
+      <comment>WalletFollowingAddressesHeader</comment>
+      <translation>Onchain friends</translation>
     </message>
   </context>
   <context>

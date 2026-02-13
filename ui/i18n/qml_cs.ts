@@ -7935,16 +7935,12 @@ Prosím přidejte jej a zkuste to znovu.</translation>
         <translation>Zobrazit QR adresy</translation>
     </message>
     <message>
-        <source>View activity</source>
-        <translation>Zobrazit aktivitu</translation>
-    </message>
-    <message>
-        <source>Already in saved addresses</source>
-        <translation>Již je v uložených adresách</translation>
-    </message>
-    <message>
         <source>Add to saved addresses</source>
         <translation>Přidat do uložených adres</translation>
+    </message>
+    <message>
+        <source>Remove from saved addresses</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7962,12 +7958,27 @@ Prosím přidejte jej a zkuste to znovu.</translation>
         <translation>Vaše hledání obsahuje neplatné znaky (použijte pouze A-Z a 0-9, jednu mezeru, pomlčky a podtržítka)</translation>
     </message>
     <message>
-        <source>Your EFP onchain friends will appear here</source>
-        <translation>Zde se zobrazí vaše přátelé z EFP</translation>
-    </message>
-    <message>
         <source>No following addresses found. Check spelling or whether the address is correct.</source>
         <translation>Nebyly nalezeny žádné sledované adresy. Zkontrolujte pravopis nebo správnost adresy.</translation>
+    </message>
+    <message>
+        <source>No onchain follows yet. Find and follow Ethereum accounts on %1 to see them here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ethereum Follow Protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FollowingAddressesDelegate</name>
+    <message>
+        <source>Remove from saved addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to saved addresses</source>
+        <translation type="unfinished">Přidat do uložených adres</translation>
     </message>
 </context>
 <context>
@@ -10318,12 +10329,12 @@ přístup ke svým prostředkům.</translation>
         <translation>Uložené adresy</translation>
     </message>
     <message>
-        <source>EFP onchain friends</source>
-        <translation>Přátelé na EFP</translation>
-    </message>
-    <message>
         <source>Add account</source>
         <translation>Přidat účet</translation>
+    </message>
+    <message>
+        <source>Onchain friends</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11903,13 +11914,6 @@ selhalo</translation>
     <message>
         <source>Retry mint</source>
         <translation>Zkusit mint znovu</translation>
-    </message>
-</context>
-<context>
-    <name>MobileAddressBar</name>
-    <message>
-        <source>Search or enter address</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14493,33 +14497,51 @@ selhalo</translation>
         <translation>Povolit přístup k fotoaparátu</translation>
     </message>
     <message>
-        <source>To scan a QR, Status needs
-access to your webcam</source>
-        <translation>Pro naskenování QR kódu potřebuje Status
-přístup k vaší webkameře</translation>
+        <source>Align the QR code within the frame to scan</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Camera access denied. Please enable it in system settings.</source>
-        <translation>Přístup k fotoaparátu odepřen. Prosím povolte jej v nastavení systému.</translation>
+        <source>To scan QR codes, add contacts, send funds to wallets, and sync apps.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ensure that the QR code is in focus to scan</source>
-        <translation>Ujistěte se, že je QR kód zaostřený pro naskenování</translation>
+        <source>Open settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scanned successfully</source>
+        <translation type="unfinished">Úspěšně naskenováno</translation>
     </message>
 </context>
 <context>
     <name>QRCodeScannerDialog</name>
     <message>
-        <source>Scan QR</source>
-        <translation>Skenovat QR</translation>
+        <source>QR Scanner</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Status doesn&apos;t understand the QR code.</source>
-        <translation>Status nedokáže rozeznat tento QR kód.</translation>
+        <source>Contact request</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanned successfully</source>
-        <translation>Úspěšně naskenováno</translation>
+        <source>Join communities</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send tokens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open WEB links</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WalletConnect to connect dApps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>We could not read that QR code.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14790,16 +14812,16 @@ přístup k vaší webkameře</translation>
         <translation>Odstranit %1</translation>
     </message>
     <message>
-        <source>Are you sure you want to remove %1 from your saved addresses? Transaction history relating to this address will no longer be labelled %1.</source>
-        <translation>Opravdu chcete odstranit %1 z vašich uložených adres? Historie transakcí týkající se této adresy již nebude označena %1.</translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
         <source>Remove saved address</source>
         <translation>Odstranit uloženou adresu</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove %1 from your saved addresses?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -15024,12 +15046,12 @@ přístup k vaší webkameře</translation>
         <translation>Zobrazit QR adresy</translation>
     </message>
     <message>
-        <source>View activity</source>
-        <translation>Zobrazit aktivitu</translation>
-    </message>
-    <message>
         <source>Remove saved address</source>
         <translation>Odstranit uloženou adresu</translation>
+    </message>
+    <message>
+        <source>Add to saved addresses</source>
+        <translation type="unfinished">Přidat do uložených adres</translation>
     </message>
 </context>
 <context>
@@ -18986,16 +19008,16 @@ If a transaction with a lower nonce is pending, higher nonce transactions will r
 <context>
     <name>WalletFollowingAddressesHeader</name>
     <message>
-        <source>Add via EFP</source>
-        <translation>Přidat pomocí EFP</translation>
-    </message>
-    <message>
-        <source>EFP onchain friends</source>
-        <translation>Přátelé na EFP</translation>
-    </message>
-    <message>
         <source>Last refreshed %1</source>
         <translation>Poslední aktualizace %1</translation>
+    </message>
+    <message>
+        <source>Find a friend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Onchain friends</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

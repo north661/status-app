@@ -9,6 +9,11 @@ import StatusQ.Controls.Validators
 import StatusQ.Core
 import StatusQ.Core.Backpressure
 import StatusQ.Core.Theme
+import StatusQ.Core.Utils as SQUtils
+
+import MobileUI
+
+import utils
 
 /*
     NOTE:   I'm doing some crazy workarounds here. Tested on MacOS.
@@ -33,22 +38,24 @@ import StatusQ.Core.Theme
     So we show `Scan QR` button everytime.
 */
 
-Column {
+ColumnLayout {
     id: root
 
     property list<StatusValidator> validators
-    property alias cameraHeight: cameraLoader.height
-    property alias cameraWidth: cameraLoader.width
+    property int state: StatusQrCodeScanner.State.None
+
+    // This property is used in Storybook to simulate camera access being denied
+    property bool cameraPermissionDenied: false
 
     signal validTagFound(string tag)
 
-    spacing: 12
+    spacing: Theme.padding / 1.4
 
     QtObject {
         id: d
 
         readonly property int radius: 16
-        readonly property bool cameraReady: cameraPermission.status === Qt.Granted
+        readonly property bool cameraReady: !root.cameraPermissionDenied && cameraPermission.status === Qt.Granted
         property string errorMessage
         property int counter: 0
 
@@ -56,18 +63,37 @@ Column {
             for (let i in root.validators) {
                 const validator = root.validators[i]
                 if (!validator.validate(tag)) {
+                    root.state = StatusQrCodeScanner.State.Error
                     d.errorMessage = validator.errorMessage
+                    errorTimer.start()
                     return
                 }
             }
             d.errorMessage = ""
             root.validTagFound(tag)
+            MobileUI.vibrate()
+            root.state = StatusQrCodeScanner.State.Success
+        }
+    }
+
+    Timer {
+        id: errorTimer
+        interval: 2000
+        running: false
+        repeat: false
+        onTriggered: {
+            MobileUI.vibrate()
+            root.state = StatusQrCodeScanner.State.None
         }
     }
 
     CameraPermission {
         id: cameraPermission
         Component.onCompleted: {
+            if (root.cameraPermissionDenied) {
+                return
+            }
+
             if (cameraPermission.status !== Qt.PermissionStatus.Granted)
                 cameraPermission.request()
         }
@@ -76,9 +102,9 @@ Column {
     Loader {
         id: cameraLoader
         active: true
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 330
-        height: 330
+        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+        Layout.fillHeight: true
 
         sourceComponent: d.cameraReady ? cameraComponent : btnComponent
     }
@@ -86,45 +112,61 @@ Column {
     Component {
         id: btnComponent
 
-        ShapeRectangle {
+        ColumnLayout {
             anchors.fill: parent
-            path.fillColor: Theme.palette.baseColor4
-            radius: d.radius
+            spacing: Theme.smallPadding / 2
 
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 20
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
 
-                Item {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                }
+            Image {
+                Layout.alignment: Qt.AlignHCenter
 
-                StatusBaseText {
-                    Layout.fillWidth: true
-                    text: qsTr('Enable access to your camera')
-                    leftPadding: 48
-                    rightPadding: 48
-                    font.pixelSize: 15
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                }
+                // Temporary image
+                source: (Theme.style === Theme.Light) ? Assets.png("activity_center/NewsDisabled-Light") :
+                                                        Assets.png("activity_center/NewsDisabled-Dark")
+                fillMode: Image.PreserveAspectFit
+                Layout.preferredWidth: 80
+                mipmap: true
+                cache: false
+            }
 
-                StatusBaseText {
-                    Layout.fillWidth: true
-                    text: qsTr("To scan a QR, Status needs\naccess to your webcam")
-                    leftPadding: 48
-                    rightPadding: 48
-                    font.pixelSize: 15
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Theme.palette.directColor4
-                }
+            StatusBaseText {
+                Layout.fillWidth: true
+                text: qsTr('Enable access to your camera')
+                font.weight: Font.Medium
+                leftPadding: Theme.bigPadding
+                rightPadding: Theme.bigPadding
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
 
-                Item {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                }
+            StatusBaseText {
+                Layout.fillWidth: true
+                text: qsTr("To scan QR codes, add contacts, send funds to wallets, and sync apps.")
+                leftPadding: Theme.bigPadding
+                rightPadding: Theme.bigPadding
+                font.pixelSize: Theme.additionalTextSize
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            StatusButton {
+                text: qsTr("Open settings")
+                // Opening app settings is only supported on mobile
+                // This screen shouldn't be shown on desktop anyway
+                visible: SQUtils.Utils.isMobile
+                size: StatusBaseButton.Size.Tiny
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: Theme.smallPadding
+                onClicked: SystemUtils.openAppSettings()
+            }
+
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
         }
     }
@@ -132,6 +174,7 @@ Column {
     Component {
         id: cameraComponent
         StatusQrCodeScanner {
+            state: root.state
             anchors.fill: parent
             onLastTagChanged: {
                 d.validateTag(lastTag)
@@ -139,9 +182,12 @@ Column {
         }
     }
 
-    Item {
-        width: parent.width
-        height: 8
+    StatusBaseText {
+        text: qsTr("Scanned successfully")
+        color: Theme.palette.primaryColor1
+        horizontalAlignment: Text.AlignHCenter
+        Layout.fillWidth: true
+        visible: root.state === StatusQrCodeScanner.State.Success
     }
 
     StatusBaseText {
@@ -150,26 +196,24 @@ Column {
         height: visible ? implicitHeight : 0
         wrapMode: Text.WordWrap
         color: Theme.palette.dangerColor1
+        Layout.alignment: Qt.AlignHCenter
         horizontalAlignment: Text.AlignHCenter
         text: {
             if (!!d.errorMessage) {
                 return d.errorMessage
-            }
-            if (cameraPermission.status === Qt.Denied) {
-                return qsTr("Camera access denied. Please enable it in system settings.")
             }
             return ""
         }
     }
 
     StatusBaseText {
-        visible: d.cameraReady && cameraLoader.item?.cameraAvailable
+        visible: d.cameraReady && !!cameraLoader.item?.cameraAvailable && root.state === StatusQrCodeScanner.State.None
         width: parent.width
         height: visible ? implicitHeight : 0
         wrapMode: Text.WordWrap
         color: Theme.palette.baseColor1
-        font.pixelSize: Theme.tertiaryTextFontSize
+        Layout.alignment: Qt.AlignHCenter
         horizontalAlignment: Text.AlignHCenter
-        text: qsTr("Ensure that the QR code is in focus to scan")
+        text: qsTr("Align the QR code within the frame to scan")
     }
 }

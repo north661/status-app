@@ -7894,15 +7894,11 @@ Please add it and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>View activity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Already in saved addresses</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add to saved addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove from saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7921,11 +7917,26 @@ Please add it and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Your EFP onchain friends will appear here</source>
+        <source>No following addresses found. Check spelling or whether the address is correct.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No following addresses found. Check spelling or whether the address is correct.</source>
+        <source>No onchain follows yet. Find and follow Ethereum accounts on %1 to see them here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ethereum Follow Protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FollowingAddressesDelegate</name>
+    <message>
+        <source>Remove from saved addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10241,11 +10252,11 @@ access to your funds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>EFP onchain friends</source>
+        <source>Add account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add account</source>
+        <source>Onchain friends</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -11805,13 +11816,6 @@ to load</source>
     </message>
     <message>
         <source>Retry mint</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MobileAddressBar</name>
-    <message>
-        <source>Search or enter address</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -14386,31 +14390,50 @@ to load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>To scan a QR, Status needs
-access to your webcam</source>
+        <source>Align the QR code within the frame to scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Camera access denied. Please enable it in system settings.</source>
+        <source>Scanned successfully</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ensure that the QR code is in focus to scan</source>
+        <source>To scan QR codes, add contacts, send funds to wallets, and sync apps.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QRCodeScannerDialog</name>
     <message>
-        <source>Scan QR</source>
+        <source>QR Scanner</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Status doesn&apos;t understand the QR code.</source>
+        <source>Contact request</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanned successfully</source>
+        <source>Join communities</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send tokens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open WEB links</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WalletConnect to connect dApps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>We could not read that QR code.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -14681,15 +14704,15 @@ access to your webcam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Are you sure you want to remove %1 from your saved addresses? Transaction history relating to this address will no longer be labelled %1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Remove saved address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove %1 from your saved addresses?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -14914,11 +14937,11 @@ access to your webcam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>View activity</source>
+        <source>Remove saved address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Remove saved address</source>
+        <source>Add to saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -18855,15 +18878,15 @@ If a transaction with a lower nonce is pending, higher nonce transactions will r
 <context>
     <name>WalletFollowingAddressesHeader</name>
     <message>
-        <source>Add via EFP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EFP onchain friends</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Last refreshed %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find a friend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Onchain friends</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

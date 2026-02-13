@@ -7908,15 +7908,11 @@ Por favor, agrégala e intenta de nuevo.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>View activity</source>
-        <translation type="unfinished">Ver actividad</translation>
-    </message>
-    <message>
-        <source>Already in saved addresses</source>
+        <source>Add to saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add to saved addresses</source>
+        <source>Remove from saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -7935,11 +7931,26 @@ Por favor, agrégala e intenta de nuevo.</translation>
         <translation type="unfinished">Tu búsqueda contiene caracteres inválidos (usa solo A-Z y 0-9, un solo espacio en blanco, guiones y guiones bajos)</translation>
     </message>
     <message>
-        <source>Your EFP onchain friends will appear here</source>
+        <source>No following addresses found. Check spelling or whether the address is correct.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No following addresses found. Check spelling or whether the address is correct.</source>
+        <source>No onchain follows yet. Find and follow Ethereum accounts on %1 to see them here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ethereum Follow Protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FollowingAddressesDelegate</name>
+    <message>
+        <source>Remove from saved addresses</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to saved addresses</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10257,12 +10268,12 @@ acceso a tus fondos.</translation>
         <translation>Direcciones guardadas</translation>
     </message>
     <message>
-        <source>EFP onchain friends</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add account</source>
         <translation type="unfinished">Agregar cuenta</translation>
+    </message>
+    <message>
+        <source>Onchain friends</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -11827,13 +11838,6 @@ al cargar</translation>
     <message>
         <source>Retry mint</source>
         <translation></translation>
-    </message>
-</context>
-<context>
-    <name>MobileAddressBar</name>
-    <message>
-        <source>Search or enter address</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14409,32 +14413,50 @@ al cargar</translation>
         <translation>Habilitar acceso a tu cámara</translation>
     </message>
     <message>
-        <source>To scan a QR, Status needs
-access to your webcam</source>
-        <translation>Para escanear un QR, Status necesita
-acceso a tu cámara web</translation>
-    </message>
-    <message>
-        <source>Camera access denied. Please enable it in system settings.</source>
+        <source>Align the QR code within the frame to scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ensure that the QR code is in focus to scan</source>
-        <translation>Asegúrate de que el código QR esté enfocado para escanear</translation>
+        <source>Scanned successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To scan QR codes, add contacts, send funds to wallets, and sync apps.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open settings</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QRCodeScannerDialog</name>
     <message>
-        <source>Scan QR</source>
-        <translation>Escanear QR</translation>
-    </message>
-    <message>
-        <source>Status doesn&apos;t understand the QR code.</source>
+        <source>QR Scanner</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scanned successfully</source>
+        <source>Contact request</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Join communities</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send tokens</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open WEB links</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WalletConnect to connect dApps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>We could not read that QR code.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -14705,16 +14727,16 @@ acceso a tu cámara web</translation>
         <translation>Eliminar %1</translation>
     </message>
     <message>
-        <source>Are you sure you want to remove %1 from your saved addresses? Transaction history relating to this address will no longer be labelled %1.</source>
-        <translation>¿Estás seguro de que quieres eliminar %1 de tus direcciones guardadas? El historial de transacciones relacionado con esta dirección ya no se etiquetará como %1.</translation>
-    </message>
-    <message>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
         <source>Remove saved address</source>
         <translation>Eliminar dirección guardada</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove %1 from your saved addresses?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -14938,12 +14960,12 @@ acceso a tu cámara web</translation>
         <translation></translation>
     </message>
     <message>
-        <source>View activity</source>
-        <translation>Ver actividad</translation>
-    </message>
-    <message>
         <source>Remove saved address</source>
         <translation>Eliminar dirección guardada</translation>
+    </message>
+    <message>
+        <source>Add to saved addresses</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -18892,16 +18914,16 @@ Si una transacción con un nonce más bajo está pendiente, las transacciones co
 <context>
     <name>WalletFollowingAddressesHeader</name>
     <message>
-        <source>Add via EFP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EFP onchain friends</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Last refreshed %1</source>
         <translation type="unfinished">Última actualización %1</translation>
+    </message>
+    <message>
+        <source>Find a friend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Onchain friends</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
