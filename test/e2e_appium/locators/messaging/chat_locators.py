@@ -16,6 +16,18 @@ class ChatLocators(BaseLocators):
     SEND_BUTTON = BaseLocators.xpath(
         "//*[contains(@resource-id,'statusChatInputSendButton')]"
     )
+    EMOJI_BUTTON = BaseLocators.xpath(
+        "//*[contains(@content-desc, '[tid:statusChatInputEmojiButton]') or "
+        "contains(@resource-id,'statusChatInputEmojiButton')]"
+    )
+    COMMAND_BUTTON = BaseLocators.xpath(
+        "//*[contains(@content-desc, '[tid:statusChatInputCommandButton]') or "
+        "contains(@resource-id,'statusChatInputCommandButton')]"
+    )
+    ADD_IMAGE_ACTION = BaseLocators.xpath(
+        "//*[contains(@content-desc, '[tid:chatCommandMenu_addImage]') or "
+        "contains(@resource-id,'chatCommandMenu_addImage')]"
+    )
     CHAT_LOG_VIEW = BaseLocators.xpath("//*[contains(@resource-id,'chatLogView')]")
     INTRODUCE_SKIP_BUTTON = BaseLocators.content_desc_contains(
         "[tid:introduceSkipStatusFlatButton]"
@@ -74,6 +86,11 @@ class ChatLocators(BaseLocators):
     # and Accessible.name "Replying to {userName}"
     REPLY_PREVIEW = BaseLocators.resource_id_contains("statusChatInputReplyArea")
     REPLY_CLOSE_BUTTON = BaseLocators.resource_id_contains("replyAreaCloseButton")
+    REPLY_DETAILS = BaseLocators.xpath(
+        "//*[contains(@content-desc, '[tid:StatusMessage_replyDetails]') or "
+        "contains(@resource-id,'StatusMessage_replyDetails')]"
+    )
+    REPLY_CORNER = BaseLocators.resource_id_contains("statusMessageReplyCorner")
     
     @staticmethod
     def reply_preview_for_user(username: str) -> tuple:
@@ -81,6 +98,15 @@ class ChatLocators(BaseLocators):
         return BaseLocators.xpath(
             f"//*[contains(@resource-id,'statusChatInputReplyArea')]"
             f"[contains(@content-desc,'Replying to {username}')]"
+        )
+
+    @staticmethod
+    def message_is_reply(content: str) -> tuple:
+        """Locator for a message that shows the reply corner indicator."""
+        escaped = content.replace('"', '\\"')
+        return BaseLocators.xpath(
+            f"//*[contains(@content-desc,'{escaped}')]/ancestor::*"
+            f"//*[contains(@resource-id,'statusMessageReplyCorner')]"
         )
     
     # Edited message indicator - "(edited)" text appended to message

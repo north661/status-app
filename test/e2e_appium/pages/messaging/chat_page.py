@@ -238,4 +238,73 @@ class ChatPage(BasePage):
         locator = self.locators.reaction_on_message(emoji_code)
         return self.is_element_visible(locator, timeout=timeout)
 
+    def message_is_reply(self, content: str, timeout: int = 10) -> bool:
+        """Check if a message shows the reply corner indicator."""
+        locator = self.locators.message_is_reply(content)
+        return self.is_element_visible(locator, timeout=timeout)
+
+    def message_count(self) -> int:
+        """Return the count of message content elements in the chat log."""
+        locator = (
+            "xpath",
+            "//*[contains(@resource-id,'StatusTextMessage_chatText')]",
+        )
+        try:
+            return len(self.driver.find_elements(*locator))
+        except Exception:
+            return 0
+
+    def wait_for_message_count(self, minimum: int, timeout: int = 10) -> bool:
+        """Wait until the chat has at least `minimum` messages."""
+        return self.wait_for_condition(
+            lambda: self.message_count() >= minimum,
+            timeout=timeout,
+            poll_interval=0.5,
+        )
+
+    def send_emoji_to_chat(self, search_term: str, timeout: int = 10) -> bool:
+        """Send an emoji to the chat using emoji picker search.
+
+        Args:
+            search_term: Search text for the emoji picker (e.g., 'thumbsup').
+        """
+        from locators.messaging.message_context_menu_locators import EmojiPickerLocators
+
+        emoji_locators = EmojiPickerLocators()
+
+        if not self.safe_click(self.locators.EMOJI_BUTTON, timeout=timeout):
+            self.logger.error("Failed to click emoji button")
+            return False
+
+        if not self.is_element_visible(emoji_locators.POPUP_CONTAINER, timeout=5):
+            self.logger.error("Emoji popup did not appear")
+            return False
+
+        if not self.qt_safe_input(
+            emoji_locators.SEARCH_INPUT,
+            search_term,
+            timeout=5,
+            verify=False,
+        ):
+            self.logger.error("Failed to type in emoji search")
+            return False
+
+        first_result = emoji_locators.emoji_by_grid_position(0)
+        if not self.is_element_visible(first_result, timeout=5):
+            self.logger.error(f"No emoji results for search '{search_term}'")
+            return False
+
+        if not self.safe_click(first_result, timeout=5):
+            self.logger.error(f"Failed to tap first emoji for '{search_term}'")
+            return False
+
+        return self.safe_click(self.locators.SEND_BUTTON, timeout=5)
+
+    def open_image_dialog(self, timeout: int = 10) -> bool:
+        """Open the image attachment dialog via the command menu."""
+        if not self.safe_click(self.locators.COMMAND_BUTTON, timeout=timeout):
+            self.logger.error("Failed to click command button")
+            return False
+        return self.safe_click(self.locators.ADD_IMAGE_ACTION, timeout=5)
+
 

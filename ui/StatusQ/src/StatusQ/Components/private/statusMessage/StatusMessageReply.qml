@@ -9,6 +9,8 @@ import StatusQ.Components
 
 Item {
     id: root
+    Accessible.role: Accessible.Group
+    Accessible.name: Utils.formatAccessibleName("", root.objectName)
 
     property StatusMessageDetails replyDetails
     property bool profileClickable: true
@@ -28,6 +30,7 @@ Item {
 
         Shape {
             id: replyCorner
+            objectName: "statusMessageReplyCorner"
             Layout.alignment: Qt.AlignTop
             Layout.leftMargin: 35
             Layout.topMargin: profileImage.height/2
