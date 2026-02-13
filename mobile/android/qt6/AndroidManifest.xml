@@ -52,26 +52,59 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-          <meta-data
+            <meta-data
                 android:name="android.app.lib_name"
                 android:value="@string/lib_name" />
 
-          <meta-data
+            <meta-data
                 android:name="android.app.arguments"
                 android:value="" />
 
-          <!-- Required for Qt6 to properly detect and load native libraries -->
-          <meta-data
-                android:name="android.app.system_libs_prefix"
-                android:value="/system/lib64/" />
+            <!-- Required for Qt6 to properly detect and load native libraries -->
+            <meta-data
+                    android:name="android.app.system_libs_prefix"
+                    android:value="/system/lib64/" />
 
-          <meta-data
-                android:name="android.app.use_local_qt_libs"
-                android:value="1" />
+            <meta-data
+                    android:name="android.app.use_local_qt_libs"
+                    android:value="1" />
 
-          <meta-data
-                android:name="android.app.bundle_local_qt_libs"
-                android:value="1" />
+            <meta-data
+                    android:name="android.app.bundle_local_qt_libs"
+                    android:value="1" />
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Community paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/c/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/c/" />
+                <!-- Community channel paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/cc/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/cc/" />
+                <!-- User paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/u/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/u/" />
+                <!-- Private chat paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/p/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/p/" />
+                <!-- Community request paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/cr/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/cr/" />
+                <!-- Group chat paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/g/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/g/" />
+                <!-- Wallet paths -->
+                <data android:scheme="http" android:host="status.app" android:pathPrefix="/wallet/" />
+                <data android:scheme="https" android:host="status.app" android:pathPrefix="/wallet/" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="status-app" />
+            </intent-filter>
         </activity>
 
         <provider
