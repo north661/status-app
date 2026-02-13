@@ -234,8 +234,15 @@ pipeline {
     cleanup {
       script {
         powershell '''
-          if (Test-Path "C:\\Users\\jenkins\\AppData\\Local\\Status") {
-            Remove-Item "C:\\Users\\jenkins\\AppData\\Local\\Status" -Recurse -Force -ErrorAction SilentlyContinue
+          $paths = @(
+            "$env:APPDATA\\status", 
+            "$env:LOCALAPPDATA\\Status"
+          )
+          foreach ($path in $paths) {
+            if (Test-Path $path) {
+              Write-Host "Removing: $path"
+              Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+            }
           }
           # Clean-up registry entries
           $registryPath = "HKCU:\\Software\\Status\\Status Desktop"
