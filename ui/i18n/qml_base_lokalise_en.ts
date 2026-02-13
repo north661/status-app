@@ -5221,6 +5221,11 @@
       <comment>Constants</comment>
       <translation>Continuing will require a transaction to connect the username with your current chat key.</translation>
     </message>
+    <message>
+      <source>Temporarily unavailable, will be available in the next release.</source>
+      <comment>Constants</comment>
+      <translation>Temporarily unavailable, will be available in the next release.</translation>
+    </message>
   </context>
   <context>
     <name>ContactPanel</name>
@@ -11066,11 +11071,6 @@
   <context>
     <name>KeycardEnterPinPage</name>
     <message>
-      <source>Enter Keycard PIN</source>
-      <comment>KeycardEnterPinPage</comment>
-      <translation>Enter Keycard PIN</translation>
-    </message>
-    <message>
       <source>PIN incorrect</source>
       <comment>KeycardEnterPinPage</comment>
       <translation>PIN incorrect</translation>
@@ -11097,6 +11097,11 @@
       <source>Unblock using PUK</source>
       <comment>KeycardEnterPinPage</comment>
       <translation>Unblock using PUK</translation>
+    </message>
+    <message>
+      <source>Enter Keycard PIN</source>
+      <comment>KeycardEnterPinPage</comment>
+      <translation>Enter Keycard PIN</translation>
     </message>
     <message>
       <source>Unblock with recovery phrase</source>
@@ -11732,11 +11737,6 @@
       <translation>Unblock using PUK</translation>
     </message>
     <message>
-      <source>Unblock with recovery phrase</source>
-      <comment>KeycardIntroPage</comment>
-      <translation>Unblock with recovery phrase</translation>
-    </message>
-    <message>
       <source>Factory reset Keycard</source>
       <comment>KeycardIntroPage</comment>
       <translation>Factory reset Keycard</translation>
@@ -11805,6 +11805,11 @@
       <source>The Keycard you have inserted is blocked, you will need to unblock it, factory reset or insert a different one</source>
       <comment>KeycardIntroPage</comment>
       <translation>The Keycard you have inserted is blocked, you will need to unblock it, factory reset or insert a different one</translation>
+    </message>
+    <message>
+      <source>Unblock with recovery phrase</source>
+      <comment>KeycardIntroPage</comment>
+      <translation>Unblock with recovery phrase</translation>
     </message>
   </context>
   <context>
@@ -11894,11 +11899,6 @@
       <translation>Enter this Keycard’s PIN</translation>
     </message>
     <message>
-      <source>Enter Keycard PIN</source>
-      <comment>KeycardPin</comment>
-      <translation>Enter Keycard PIN</translation>
-    </message>
-    <message>
       <source>PIN incorrect</source>
       <comment>KeycardPin</comment>
       <translation>PIN incorrect</translation>
@@ -11960,6 +11960,11 @@
       <source>Changing PIN failed</source>
       <comment>KeycardPin</comment>
       <translation>Changing PIN failed</translation>
+    </message>
+    <message>
+      <source>Enter Keycard PIN</source>
+      <comment>KeycardPin</comment>
+      <translation>Enter Keycard PIN</translation>
     </message>
   </context>
   <context>
@@ -12773,16 +12778,41 @@
       <translation>Reading Keycard...</translation>
     </message>
     <message>
+      <source>Oops this isn&#39;t a Keycard.&lt;br&gt;Try using a Keycard instead.</source>
+      <comment>LoginKeycardBox</comment>
+      <translation>Oops this isn&#39;t a Keycard.&lt;br&gt;Try using a Keycard instead.</translation>
+    </message>
+    <message>
+      <source>Wrong Keycard for this profile</source>
+      <comment>LoginKeycardBox</comment>
+      <translation>Wrong Keycard for this profile</translation>
+    </message>
+    <message>
+      <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
+      <comment>LoginKeycardBox</comment>
+      <translation>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</translation>
+    </message>
+    <message>
+      <source>Max pairing slots reached.</source>
+      <comment>LoginKeycardBox</comment>
+      <translation>Max pairing slots reached.</translation>
+    </message>
+    <message>
       <source>Keycard blocked</source>
       <comment>LoginKeycardBox</comment>
       <translation>Keycard blocked</translation>
+    </message>
+    <message>
+      <source>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</source>
+      <comment>LoginKeycardBox</comment>
+      <translation>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</translation>
     </message>
     <message numerus="yes">
       <source>PIN incorrect. %n attempt(s) remaining.</source>
       <comment>LoginKeycardBox</comment>
       <translation>
-        <numerusform>PIN incorrect. %n attempt remaining.</numerusform>
-        <numerusform>PIN incorrect. %n attempts remaining.</numerusform>
+        <numerusform></numerusform>
+        <numerusform></numerusform>
       </translation>
     </message>
     <message>
@@ -12799,36 +12829,6 @@
       <source>Enter Keycard PIN</source>
       <comment>LoginKeycardBox</comment>
       <translation>Enter Keycard PIN</translation>
-    </message>
-    <message>
-      <source>Scan keycard</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>Scan keycard</translation>
-    </message>
-    <message>
-      <source>Oops this isn&#39;t a Keycard.&lt;br&gt;Try using a Keycard instead.</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>Oops this isn&#39;t a Keycard.&lt;br&gt;Try using a Keycard instead.</translation>
-    </message>
-    <message>
-      <source>Wrong Keycard for this profile</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>Wrong Keycard for this profile</translation>
-    </message>
-    <message>
-      <source>Max pairing slots reached.</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>Max pairing slots reached.</translation>
-    </message>
-    <message>
-      <source>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</translation>
-    </message>
-    <message>
-      <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
-      <comment>LoginKeycardBox</comment>
-      <translation>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</translation>
     </message>
   </context>
   <context>
@@ -23787,6 +23787,11 @@
       <source>Report a bug on GitHub</source>
       <comment>main</comment>
       <translation>Report a bug on GitHub</translation>
+    </message>
+    <message>
+      <source>Hello World</source>
+      <comment>main</comment>
+      <translation>Hello World</translation>
     </message>
   </context>
   <context>

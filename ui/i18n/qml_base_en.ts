@@ -4279,6 +4279,10 @@ You will remain logged in, and your recovery phrase will be entirely in your han
         <source>Continuing will require a transaction to connect the username with your current chat key.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Temporarily unavailable, will be available in the next release.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ContactPanel</name>
@@ -9073,10 +9077,6 @@ Are you sure you want to do this?</source>
 <context>
     <name>KeycardEnterPinPage</name>
     <message>
-        <source>Enter Keycard PIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>PIN incorrect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9097,6 +9097,10 @@ Are you sure you want to do this?</source>
     </message>
     <message>
         <source>Unblock using PUK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Keycard PIN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9630,10 +9634,6 @@ to login to Status?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unblock with recovery phrase</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Factory reset Keycard</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9687,6 +9687,10 @@ to login to Status?</source>
     </message>
     <message>
         <source>The Keycard you have inserted is blocked, you will need to unblock it, factory reset or insert a different one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unblock with recovery phrase</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -9763,10 +9767,6 @@ access to your funds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter Keycard PIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>PIN incorrect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9815,6 +9815,10 @@ access to your funds.</source>
     </message>
     <message>
         <source>Changing PIN failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Keycard PIN</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -10491,7 +10495,27 @@ to load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Oops this isn&apos;t a Keycard.&lt;br&gt;Try using a Keycard instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wrong Keycard for this profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max pairing slots reached.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Keycard blocked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
@@ -10511,30 +10535,6 @@ to load</source>
     </message>
     <message>
         <source>Enter Keycard PIN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Scan keycard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Oops this isn&apos;t a Keycard.&lt;br&gt;Try using a Keycard instead.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Wrong Keycard for this profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max pairing slots reached.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -19548,6 +19548,10 @@ If a transaction with a lower nonce is pending, higher nonce transactions will r
     </message>
     <message>
         <source>Report a bug on GitHub</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hello World</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -4301,6 +4301,10 @@ Zůstanete přihlášeni a vaše obnovovací fráze bude zcela ve vašich rukou.
         <source>Continuing will require a transaction to connect the username with your current chat key.</source>
         <translation>Pokračování bude vyžadovat transakci pro propojení uživatelského jména s vaším aktuálním chatovacím klíčem.</translation>
     </message>
+    <message>
+        <source>Temporarily unavailable, will be available in the next release.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ContactPanel</name>
@@ -9125,10 +9129,6 @@ Opravdu to chcete udělat?</translation>
 <context>
     <name>KeycardEnterPinPage</name>
     <message>
-        <source>Enter Keycard PIN</source>
-        <translation>Zadejte PIN Keycard</translation>
-    </message>
-    <message>
         <source>PIN incorrect</source>
         <translation>Nesprávný PIN</translation>
     </message>
@@ -9153,8 +9153,12 @@ Opravdu to chcete udělat?</translation>
         <translation>Odblokovat pomocí PUK</translation>
     </message>
     <message>
+        <source>Enter Keycard PIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Unblock with recovery phrase</source>
-        <translation>Odblokovat pomocí obnovovací fráze</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9704,10 +9708,6 @@ k přihlášení do Statusu?</translation>
         <translation>Odblokovat pomocí PUK</translation>
     </message>
     <message>
-        <source>Unblock with recovery phrase</source>
-        <translation>Odblokovat pomocí obnovovací fráze</translation>
-    </message>
-    <message>
         <source>Factory reset Keycard</source>
         <translation>Tovární nastavení Keycard</translation>
     </message>
@@ -9763,6 +9763,10 @@ k přihlášení do Statusu?</translation>
         <source>The Keycard you have inserted is blocked, you will need to unblock it, factory reset or insert a different one</source>
         <translation>Vložená Keycard je zablokována, musíte ji odblokovat, provést tovární nastavení nebo vložit jinou</translation>
     </message>
+    <message>
+        <source>Unblock with recovery phrase</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>KeycardItem</name>
@@ -9775,23 +9779,23 @@ k přihlášení do Statusu?</translation>
     <name>KeycardLostPage</name>
     <message>
         <source>Lost Keycard</source>
-        <translation>Ztracená Keycard</translation>
+        <translation type="unfinished">Ztracená Keycard</translation>
     </message>
     <message>
         <source>Sorry you&apos;ve lost your Keycard</source>
-        <translation>Je nám líto, že jste ztratili svou Keycard</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Create replacement Keycard using the same recovery phrase</source>
-        <translation>Vytvořit náhradní Keycard pomocí stejné obnovovací fráze</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Start using this profile without Keycard</source>
-        <translation>Začít používat tento profil bez Keycard</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Order a new Keycard</source>
-        <translation>Objednat novou Keycard</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9836,10 +9840,6 @@ přístup ke svým prostředkům.</translation>
     <message>
         <source>Enter this Keycard’s PIN</source>
         <translation>Zadejte PIN této Keycard</translation>
-    </message>
-    <message>
-        <source>Enter Keycard PIN</source>
-        <translation>Zadejte PIN Keycard</translation>
     </message>
     <message>
         <source>PIN incorrect</source>
@@ -9892,6 +9892,10 @@ přístup ke svým prostředkům.</translation>
     <message>
         <source>Changing PIN failed</source>
         <translation>Změna PINu selhala</translation>
+    </message>
+    <message>
+        <source>Enter Keycard PIN</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -10557,51 +10561,23 @@ selhalo</translation>
     <name>LoginKeycardBox</name>
     <message>
         <source>Unblock with PUK</source>
-        <translation>Odblokovat pomocí PUK</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Unblock with recovery phrase</source>
-        <translation>Odblokovat pomocí obnovovací fráze</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Plug in Keycard reader...</source>
-        <translation>Připojte čtečku Keycard...</translation>
+        <translation type="unfinished">Připojte čtečku Keycard...</translation>
     </message>
     <message>
         <source>Insert your Keycard...</source>
-        <translation>Vložte svou Keycard...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Reading Keycard...</source>
-        <translation>Načítání Keycard...</translation>
-    </message>
-    <message>
-        <source>Keycard blocked</source>
-        <translation>Keycard zablokována</translation>
-    </message>
-    <message numerus="yes">
-        <source>PIN incorrect. %n attempt(s) remaining.</source>
-        <translation>
-            <numerusform>Nesprávný PIN. Zbývá %n pokus.</numerusform>
-            <numerusform>Nesprávný PIN. Zbývají %n pokusy.</numerusform>
-            <numerusform>Nesprávný PIN. Zbývá %n pokusů.</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Login failed. %1</source>
-        <translation>Přihlášení selhalo. %1</translation>
-    </message>
-    <message>
-        <source>Show details.</source>
-        <translation>Zobrazit podrobnosti.</translation>
-    </message>
-    <message>
-        <source>Enter Keycard PIN</source>
-        <translation>Zadejte PIN Keycard</translation>
-    </message>
-    <message>
-        <source>Scan keycard</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Načítání Keycard...</translation>
     </message>
     <message>
         <source>Oops this isn&apos;t a Keycard.&lt;br&gt;Try using a Keycard instead.</source>
@@ -10612,15 +10588,39 @@ selhalo</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Max pairing slots reached.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keycard blocked</source>
+        <translation type="unfinished">Keycard zablokována</translation>
     </message>
     <message>
         <source>The scanned Keycard is empty.&lt;br&gt;Use the correct Keycard for this profile.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>PIN incorrect. %n attempt(s) remaining.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
-        <source>Issue detecting Keycard.&lt;br&gt;Remove and re-insert reader and Keycard, check no other security keys are plugged in.</source>
+        <source>Login failed. %1</source>
+        <translation type="unfinished">Přihlášení selhalo. %1</translation>
+    </message>
+    <message>
+        <source>Show details.</source>
+        <translation type="unfinished">Zobrazit podrobnosti.</translation>
+    </message>
+    <message>
+        <source>Enter Keycard PIN</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -19679,6 +19679,10 @@ If a transaction with a lower nonce is pending, higher nonce transactions will r
     </message>
     <message>
         <source>Report a bug on GitHub</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hello World</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
