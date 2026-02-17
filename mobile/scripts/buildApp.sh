@@ -73,7 +73,8 @@ if [[ "${OS}" == "android" ]]; then
   AAB_OUT="build/outputs/bundle/${BUILD_TYPE}/android-build-${BUILD_TYPE}.aab"
 
   # Build with specified gradle targets
-  ./gradlew "${GRADLE_TARGETS}" --no-daemon
+  # shellcheck disable=SC2086 # intentional word splitting for multiple gradle tasks
+  ./gradlew ${GRADLE_TARGETS} --no-daemon
 
   # Copy whichever artifacts were built
   BUILT=""
