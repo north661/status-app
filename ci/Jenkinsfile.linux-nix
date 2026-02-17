@@ -28,7 +28,7 @@ pipeline {
     string(
       name: 'NIMFLAGS',
       description: 'Extra Nim flags. Examples: --verbosity:2 --passL:"-v" --passC:"-v"',
-      defaultValue: "--colors:off --nimcache:${env.WORKSPACE_TMP}/nimcache"
+      defaultValue: ''
     )
     booleanParam(
       name: 'USE_MOCKED_KEYCARD_LIB',
@@ -70,7 +70,6 @@ pipeline {
     GO_GENERATE_FAST_DIR = "${env.WORKSPACE_TMP}/go-generate-fast"
     SENTRY_PRODUCTION = "${utils.isReleaseBuild() ? 'true' : 'false'}"
     /* Hack fix for params not being set in job on first run */
-    NIMFLAGS =               "${params.NIMFLAGS}"
     ENTITLEMENTS =           "${params.ENTITLEMENTS}"
     RELEASE =                "${params.RELEASE}"
     INCLUDE_DEBUG_SYMBOLS =  "${params.INCLUDE_DEBUG_SYMBOLS}"
@@ -78,6 +77,8 @@ pipeline {
     USE_MOCKED_KEYCARD_LIB = "${params.USE_MOCKED_KEYCARD_LIB}"
     /* FIXME: figure out why NIMFLAGS are not respected */
     XDG_CACHE_HOME = "${env.WORKSPACE_TMP}/.cache"
+    /* Ensure nimcache is not shared between builds. */
+    NIMFLAGS = "${params.NIMFLAGS} --colors:off --nimcache:${env.WORKSPACE_TMP}/nimcache"
   }
 
   stages {
