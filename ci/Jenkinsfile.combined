@@ -20,7 +20,7 @@ pipeline {
     disableConcurrentBuilds()
     disableRestartFromStage()
     /* Prevent Jenkins jobs from running forever */
-    timeout(time: 180, unit: 'MINUTES')
+    timeout(time: 1240, unit: 'MINUTES')
     /* Limit builds retained */
     buildDiscarder(logRotator(
       numToKeepStr: '30',
@@ -94,31 +94,40 @@ pipeline {
               }
               steps {
                 script {
-                  parallel(
-                    'E2E': {
-                      windows_e2e = build(
-                        job: 'status-app/systems/windows/x86_64/tests-e2e',
-                        parameters: jenkins.mapToParams([
-                          BUILD_SOURCE:       windows_x86_64.fullProjectName,
-                          TESTRAIL_RUN_NAME:  utils.pkgFilename(),
-                          TEST_SCOPE_FLAG:    utils.isReleaseBuild() ? '-m=critical' : '',
-                          GIT_REF:            env.BRANCH_NAME,
-                        ]),
-                      )
-                    },
-                    'Benchmark': {
-                      benchmark_windows_e2e = build(
-                        job: 'status-app/e2e/nightly-benchmark-windows-master',
-                        propagate: false,
-                        parameters: jenkins.mapToParams([
-                          BUILD_SOURCE:      windows_x86_64.fullProjectName,
-                          TESTRAIL_RUN_NAME: utils.pkgFilename(),
-                          TEST_SCOPE_FLAG:   utils.isReleaseBuild() ? '-m=critical' : '',
-                          GIT_REF:           env.BRANCH_NAME
-                        ]),
-                      )
-                    }
-                  )
+                  'E2E': {
+                    windows_e2e = build(
+                      job: 'status-app/systems/windows/x86_64/tests-e2e',
+                      parameters: jenkins.mapToParams([
+                        BUILD_SOURCE:       windows_x86_64.fullProjectName,
+                        TESTRAIL_RUN_NAME:  utils.pkgFilename(),
+                        TEST_SCOPE_FLAG:    utils.isReleaseBuild() ? '-m=critical' : '',
+                        GIT_REF:            env.BRANCH_NAME,
+                      ]),
+                    )
+                  }
+                }
+              }
+            }
+            stage('Windows E2E Benchmark') {
+              when {
+                expression {
+                  env.JOB_NAME.toLowerCase().contains('nightly')
+                }
+              }
+              steps {
+                script {
+                  'Benchmark': {
+                    benchmark_windows_e2e = build(
+                      job: 'status-app/e2e/nightly-benchmark-windows-master',
+                      propagate: false,
+                      parameters: jenkins.mapToParams([
+                        BUILD_SOURCE:      windows_x86_64.fullProjectName,
+                        TESTRAIL_RUN_NAME: utils.pkgFilename(),
+                        TEST_SCOPE_FLAG:   utils.isReleaseBuild() ? '-m=critical' : '',
+                        GIT_REF:           env.BRANCH_NAME
+                      ]),
+                    )
+                  }
                 }
               }
             }
