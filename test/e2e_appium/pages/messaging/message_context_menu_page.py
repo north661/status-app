@@ -1,16 +1,15 @@
-from typing import Optional
 
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 
-from ..base_page import BasePage
-from locators.messaging.message_context_menu_locators import (
-    MessageContextMenuLocators,
-    EmojiPickerLocators,
-)
 from locators.messaging.chat_locators import ChatLocators
+from locators.messaging.message_context_menu_locators import (
+    EmojiPickerLocators,
+    MessageContextMenuLocators,
+)
+
+from ..base_page import BasePage
 
 
 class MessageContextMenuPage(BasePage):

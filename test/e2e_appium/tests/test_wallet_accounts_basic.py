@@ -1,8 +1,8 @@
 import pytest
 
-from pages.wallet.wallet_left_panel import WalletLeftPanel
 from pages.app import App
 from pages.onboarding.welcome_back_page import WelcomeBackPage
+from pages.wallet.wallet_left_panel import WalletLeftPanel
 from utils.generators import generate_account_name
 from utils.multi_device_helpers import StepMixin
 
@@ -11,6 +11,7 @@ class TestWalletAccountsBasic(StepMixin):
     @pytest.mark.gate
     @pytest.mark.wallet
     @pytest.mark.smoke
+    @pytest.mark.timeout(900)
     async def test_add_and_delete_generated_account(self):
         async with self.step(self.device, "Verify wallet panel loaded"):
             panel = WalletLeftPanel(self.device.driver)
