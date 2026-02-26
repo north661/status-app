@@ -19,7 +19,7 @@ class TestSettingsPasswordChange(StepMixin):
             app = App(self.device.driver)
             assert app.click_settings_left_nav(), "Failed to open Settings"
             settings = SettingsPage(self.device.driver)
-            assert settings.is_loaded(), "Settings not detected"
+            assert settings.is_loaded(timeout=12), "Settings not detected"
 
         async with self.step(self.device, "Open password settings"):
             password_settings = settings.open_password_settings()

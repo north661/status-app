@@ -43,12 +43,10 @@ async def establish_contact(
     Returns:
         ``(sender_suffix, receiver_suffix, sender_chat_key, receiver_chat_key)``
     """
-    # Capture profile links
+    # Capture profile links — capture_profile_link() already calls
+    # activate_app() internally when the settings fallback is used.
     sender_link = await asyncio.to_thread(sender.capture_profile_link)
-    App(sender.driver).app_lifecycle.activate_app()
-
     receiver_link = await asyncio.to_thread(receiver.capture_profile_link)
-    App(receiver.driver).app_lifecycle.activate_app()
 
     assert sender_link, "Sender device did not return a profile link"
     assert receiver_link, "Receiver device did not return a profile link"

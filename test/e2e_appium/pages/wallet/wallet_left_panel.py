@@ -96,6 +96,10 @@ class WalletLeftPanel(BasePage):
         Returns:
             ReceiveModal if opened successfully, None otherwise.
         """
+        # Footer may be off-screen on portrait devices after context-menu
+        # interactions; scroll it into view before attempting the click.
+        self.scroll_to_element(self.locators.FOOTER_RECEIVE, max_swipes=3, timeout=2)
+
         if not self.safe_click(self.locators.FOOTER_RECEIVE, timeout=timeout):
             self.logger.error("Failed to click receive button in wallet footer")
             return None
