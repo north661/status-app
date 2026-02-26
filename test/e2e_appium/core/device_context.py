@@ -195,6 +195,7 @@ class DeviceContext:
                 overlays_to_dismiss = 1
             else:
                 try:
+                    app._ensure_main_nav_visible()
                     app.safe_click(locators.PROFILE_NAV_BUTTON, timeout=5)
                     overlays_to_dismiss = 1
                 except Exception as exc:
