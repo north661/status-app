@@ -85,8 +85,10 @@ class WalletLeftPanel(BasePage):
             return False
         
         if self.wait_for_condition(check_clipboard, timeout=3, poll_interval=0.1):
+            # Wait for the context menu to fully dismiss before returning
+            self.wait_for_invisibility(self.locators.ACCOUNT_CONTEXT_MENU, timeout=3)
             return clipboard_result[0]
-        
+
         self.logger.error("Clipboard did not contain a valid address after copy")
         return None
 
@@ -96,11 +98,16 @@ class WalletLeftPanel(BasePage):
         Returns:
             ReceiveModal if opened successfully, None otherwise.
         """
-        # Footer may be off-screen on portrait devices after context-menu
-        # interactions; scroll it into view before attempting the click.
-        self.scroll_to_element(self.locators.FOOTER_RECEIVE, max_swipes=3, timeout=2)
-
-        if not self.safe_click(self.locators.FOOTER_RECEIVE, timeout=timeout):
+        # FOOTER_RECEIVE uses resource-id; fall back to content-desc
+        # which matches the pattern of the other footer button locators.
+        fallback = self.locators.content_desc_contains(
+            "[tid:walletFooterReceiveButton]"
+        )
+        if not self.safe_click(
+            self.locators.FOOTER_RECEIVE,
+            fallback_locators=[fallback],
+            timeout=timeout,
+        ):
             self.logger.error("Failed to click receive button in wallet footer")
             return None
 

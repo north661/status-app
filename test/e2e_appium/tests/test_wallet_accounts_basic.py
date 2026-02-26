@@ -35,9 +35,8 @@ class TestWalletAccountsBasic(StepMixin):
 
         async with self.step(self.device, "Open Receive modal and verify address match"):
             # Re-select account after context menu closes (ensures receive button is enabled)
-            account_rows = panel.account_rows()
-            account_rows[0].click()
-            
+            panel.safe_click(panel.locators.ACCOUNT_ROW_ANY, timeout=5)
+
             receive_modal = panel.open_receive_modal()
             assert receive_modal is not None, "Failed to open receive modal"
             assert receive_modal.is_qr_code_visible(), "QR code not visible in receive modal"
