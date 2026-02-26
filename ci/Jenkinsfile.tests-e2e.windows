@@ -236,7 +236,7 @@ pipeline {
         powershell '''
           $paths = @(
             "C:\\Users\\jenkins\\AppData\\Local\\Status",
-            "C:\\Users\\jenkins\\AppData\\Roaming\\status"
+            "C:\\Users\\jenkins\\AppData\\Roaming\\Status"
           )
           foreach ($path in $paths) {
             if (Test-Path $path) {
