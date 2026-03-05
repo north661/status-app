@@ -42,9 +42,10 @@ To enable keycard use the `USE_STATUS_KEYCARD_QT=1` flag for the main Makefile a
 
 #### Signing
 
-By default the app isn't signed.
-
-To sign the app the `QMAKE_DEVELOPMENT_TEAM` flag needs to be provided. If the development team is not Status development team, then the app bundle id needs to be updated to a unique bundle id.
+Automatic code signing is enabled by default using the Status org team (`8B5X2M6H2Y`).
+Signing is required for deploying to physical iOS devices. You need to be added to the Team in Apple Developer Portal.
+Please ask Infra team if you're not already added. You would also need to open Xcode (only once) and make sure you have logged 
+in with the same apple ID that's part of the development team set up in Apple Developer Portal.
 
 #### 
 

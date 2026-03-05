@@ -74,6 +74,19 @@ ios {
         QMAKE_BUNDLE = pr
     }
 
+    # --- Code signing configuration ---
+    !contains(CONFIG, fastlane) {
+        QMAKE_DEVELOPMENT_TEAM = 8B5X2M6H2Y
+
+        MY_CODE_SIGN_IDENTITY.name = CODE_SIGN_IDENTITY
+        MY_CODE_SIGN_IDENTITY.value = "Apple Development"
+        QMAKE_MAC_XCODE_SETTINGS += MY_CODE_SIGN_IDENTITY
+
+        MY_CODE_SIGN_STYLE.name = CODE_SIGN_STYLE
+        MY_CODE_SIGN_STYLE.value = Automatic
+        QMAKE_MAC_XCODE_SETTINGS += MY_CODE_SIGN_STYLE
+    }
+
     # --- iOS frameworks required by keychain_apple.mm ---
     LIBS += -framework LocalAuthentication \
             -framework Security \

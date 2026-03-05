@@ -11,7 +11,7 @@ BUILD_VARIANT=${BUILD_VARIANT:-"release"}
 FLAG_KEYCARD_ENABLED=${FLAG_KEYCARD_ENABLED:-1}
 
 QMAKE_BIN="${QMAKE:-qmake}"
-QMAKE_CONFIG=("CONFIG+=device" "CONFIG+=release")
+QMAKE_CONFIG=("CONFIG+=device" "CONFIG+=release" ${QMAKE_EXTRA_CONFIG:+CONFIG+=$QMAKE_EXTRA_CONFIG})
 
 # Derive names from variant: pr -> StatusPR, release -> Status
 OUTPUT_NAME="Status"
@@ -106,14 +106,13 @@ else
         "$CWD/../ios/Info.plist.template" > "$BUILD_DIR/Info.plist"
   fi
 
-  # By default the app is not signed.
-  # If `QMAKE_DEVELOPMENT_TEAM` is set, enable automatic signing with that Team ID.
-  TEAM_ID="${QMAKE_DEVELOPMENT_TEAM:-}"
   XCODE_FLAGS=(-configuration Release -sdk "$SDK" -arch "$ARCH" CURRENT_PROJECT_VERSION="$BUILD_VERSION")
-  if [[ -n "${TEAM_ID}" ]]; then
-    XCODE_FLAGS+=(CODE_SIGN_STYLE=Automatic DEVELOPMENT_TEAM="${TEAM_ID}" -allowProvisioningUpdates)
-  else
+  if [[ "${QMAKE_EXTRA_CONFIG:-}" == "fastlane" ]]; then
+    # CI: disable signing; fastlane handles it after the build.
     XCODE_FLAGS+=(CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO)
+  else
+    # Local: allow xcodebuild to auto-download provisioning profiles.
+    XCODE_FLAGS+=(-allowProvisioningUpdates)
   fi
 
   BIN_DIR=${BIN_DIR:-"$CWD/../bin/ios"}

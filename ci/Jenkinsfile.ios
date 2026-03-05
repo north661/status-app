@@ -77,6 +77,8 @@ pipeline {
     STATUS_IOS_APP_ARTIFACT = "pkg/${utils.pkgFilename(ext: 'ipa', arch: getArch(), version: env.VERSION, type: env.APP_TYPE)}"
     TESTFLIGHT_POLL_TIMEOUT = "${params.TESTFLIGHT_POLL_TIMEOUT}"
     TESTFLIGHT_POLL_INTERVAL = "${params.TESTFLIGHT_POLL_INTERVAL}"
+    /* Signing is handled by fastlane after build */
+    QMAKE_EXTRA_CONFIG = "fastlane"
     /* nwaku source directory */
     NWAKU_SOURCE_DIR = "${env.WORKSPACE_TMP}/nwaku"
     /* nim-sds source directory */
