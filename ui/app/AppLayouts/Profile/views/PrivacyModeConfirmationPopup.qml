@@ -58,6 +58,7 @@ StatusModal {
             }
 
             StatusButton {
+                objectName: "confirmPrivacyModeButton"
                 text: root.currentlyEnabled
                     ? qsTr("Disable Privacy Mode")
                     : qsTr("Enable Privacy Mode")

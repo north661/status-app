@@ -9,7 +9,7 @@ class PrivacySettingsLocators(BaseLocators):
 
     PRIVACY_MENU_ITEM = BaseLocators.text_contains("Privacy")
     THIRD_PARTY_TOGGLE = BaseLocators.text_contains("Third-party")
-    ENABLE_PRIVACY_MODE_BUTTON = BaseLocators.text_contains("Enable Privacy Mode")
-    DISABLE_PRIVACY_MODE_BUTTON = BaseLocators.text_contains("Disable Privacy Mode")
+    ENABLE_PRIVACY_MODE_BUTTON = BaseLocators.resource_id_contains("confirmPrivacyModeButton")
+    DISABLE_PRIVACY_MODE_BUTTON = BaseLocators.resource_id_contains("confirmPrivacyModeButton")
     PRIVACY_MODE_ENABLED_LABEL = BaseLocators.text_contains("Privacy Mode is enabled")
     THIRD_PARTY_SWITCH = BaseLocators.resource_id_contains("thirdPartySwitch")

@@ -525,9 +525,9 @@ class BasePage:
         except Exception:
             return False
 
-    def _is_element_checked(self, locator) -> bool:
+    def _is_element_checked(self, locator, timeout: int = 1) -> bool:
         try:
-            element = self.find_element_safe(locator, timeout=1)
+            element = self.find_element_safe(locator, timeout=timeout)
             if not element:
                 return False
             return ElementStateChecker.is_checked(element)

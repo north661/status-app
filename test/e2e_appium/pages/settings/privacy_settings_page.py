@@ -35,7 +35,7 @@ class PrivacySettingsPage(BasePage):
         return self.is_element_visible(self.locators.PRIVACY_MODE_ENABLED_LABEL, timeout=timeout)
 
     def is_third_party_switch_checked(self, timeout: Optional[int] = 5) -> bool:
-        return self._is_element_checked(self.locators.THIRD_PARTY_SWITCH)
+        return self._is_element_checked(self.locators.THIRD_PARTY_SWITCH, timeout=timeout)
 
     def enable_privacy_mode(self, timeout: Optional[int] = 10) -> bool:
         """Toggle third-party services off and confirm the Enable Privacy Mode popup."""
