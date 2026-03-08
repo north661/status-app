@@ -11,6 +11,7 @@ from .messaging_page import MessagingSettingsPage
 from .contacts_page import ContactsSettingsPage
 from .profile_page import ProfileSettingsPage
 from .share_profile_dialog import ShareProfileDialog
+from .privacy_settings_page import PrivacySettingsPage
 from .wallet_settings_page import WalletSettingsPage
 
 
@@ -134,6 +135,13 @@ class SettingsPage(BasePage):
         if not messaging_page:
             return None
         return messaging_page.open_contacts()
+
+    def open_privacy_settings(self) -> Optional[PrivacySettingsPage]:
+        if not self.safe_click(self.locators.PRIVACY_MENU_ITEM):
+            self.logger.error("Failed to click Privacy menu item")
+            return None
+        page = PrivacySettingsPage(self.driver)
+        return page if page.is_loaded(timeout=10) else None
 
     def open_profile_settings(self) -> Optional[ProfileSettingsPage]:
         if self.safe_click(self.locators.PROFILE_MENU_ITEM):

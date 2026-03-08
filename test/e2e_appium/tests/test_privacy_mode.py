@@ -1,7 +1,5 @@
 """Tests for Privacy Mode settings toggle."""
 
-import time
-
 import pytest
 
 from pages.app import App
@@ -19,47 +17,55 @@ class TestPrivacyMode:
         self.driver = onboarding.driver
         self.app = App(self.driver)
 
-    async def test_enable_privacy_mode(self):
+    def _open_privacy_settings(self):
+        """Navigate to Settings > Privacy and return the privacy page object."""
         self.app.click_settings_button()
         settings = SettingsPage(self.driver)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Privacy')]").click()
-        time.sleep(2)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Third-party')]").click()
-        time.sleep(3)
-        confirm_btn = settings.driver.find_element("xpath", "//*[contains(@text,'Enable Privacy Mode')]")
-        confirm_btn.click()
-        time.sleep(2)
-        assert settings.driver.find_element("xpath", "//*[contains(@text,'Privacy Mode is enabled')]")
+        privacy = settings.open_privacy_settings()
+        assert privacy is not None, "Failed to open Privacy settings"
+        return privacy
+
+    async def test_enable_privacy_mode(self):
+        """Verify that privacy mode can be enabled via the third-party toggle."""
+        privacy = self._open_privacy_settings()
+        assert privacy.enable_privacy_mode(timeout=self.UI_TIMEOUT), (
+            "Failed to enable privacy mode"
+        )
+        assert privacy.is_privacy_mode_enabled(timeout=self.UI_TIMEOUT), (
+            "Privacy Mode enabled label not visible after enabling"
+        )
 
     async def test_disable_privacy_mode(self):
-        self.app.click_settings_button()
-        settings = SettingsPage(self.driver)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Privacy')]").click()
-        time.sleep(2)
-        third_party = settings.driver.find_element("xpath", "//*[contains(@text,'Third-party')]")
-        third_party.click()
-        time.sleep(3)
-        disable_btn = settings.driver.find_element("xpath", "//*[contains(@text,'Disable Privacy Mode')]")
-        disable_btn.click()
-        time.sleep(2)
-        switch = settings.driver.find_element("xpath", "//*[contains(@resource-id,'thirdPartySwitch')]")
-        assert switch.get_attribute("checked") == "true"
+        """Verify that privacy mode can be disabled after being enabled."""
+        privacy = self._open_privacy_settings()
+
+        assert privacy.enable_privacy_mode(timeout=self.UI_TIMEOUT), (
+            "Failed to enable privacy mode (prerequisite for disable test)"
+        )
+        assert privacy.is_privacy_mode_enabled(timeout=self.UI_TIMEOUT), (
+            "Privacy Mode not confirmed enabled before attempting disable"
+        )
+
+        assert privacy.disable_privacy_mode(timeout=self.UI_TIMEOUT), (
+            "Failed to disable privacy mode"
+        )
+        assert privacy.is_third_party_switch_checked(), (
+            "Third-party switch should be checked after disabling privacy mode"
+        )
 
     async def test_privacy_mode_persists_after_restart(self):
-        self.app.click_settings_button()
-        settings = SettingsPage(self.driver)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Privacy')]").click()
-        time.sleep(2)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Third-party')]").click()
-        time.sleep(3)
-        settings.driver.find_element("xpath", "//*[contains(@text,'Enable Privacy Mode')]").click()
-        time.sleep(2)
-        self.driver.terminate_app("im.status.ethereum")
-        time.sleep(5)
-        self.driver.activate_app("im.status.ethereum")
-        time.sleep(10)
-        self.app.click_settings_button()
-        settings.driver.find_element("xpath", "//*[contains(@text,'Privacy')]").click()
-        time.sleep(2)
-        switch = settings.driver.find_element("xpath", "//*[contains(@resource-id,'thirdPartySwitch')]")
-        assert switch.get_attribute("checked") == "false"
+        """Verify that privacy mode state survives an app restart."""
+        privacy = self._open_privacy_settings()
+        assert privacy.enable_privacy_mode(timeout=self.UI_TIMEOUT), (
+            "Failed to enable privacy mode before restart"
+        )
+        assert privacy.is_privacy_mode_enabled(timeout=self.UI_TIMEOUT), (
+            "Privacy Mode not confirmed enabled before restart"
+        )
+
+        assert self.app.restart_app(), "App restart failed"
+
+        privacy_after = self._open_privacy_settings()
+        assert not privacy_after.is_third_party_switch_checked(), (
+            "Third-party switch should remain unchecked after restart"
+        )
