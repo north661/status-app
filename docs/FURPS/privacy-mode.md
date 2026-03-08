@@ -36,3 +36,35 @@
 - Provide developer hooks or feature flags to test and enforce privacy constraints.
 - Document all third-party dependencies and their relation to Privacy Mode.
 - Add automated tests and runtime checks to prevent future regressions or silent violations.
+
+## Acceptance Criteria
+
+### AC-PM-001: Toggle disables third-party calls
+**Given** the user is on the Privacy & Security settings screen
+**When** they enable Privacy Mode via the third-party services toggle
+**Then** no network requests are made to third-party domains (coingecko, infura, walletconnect, etc.)
+**Verify by**: Network traffic capture during a 2-minute session with Privacy Mode on
+
+### AC-PM-002: User sees confirmation before enabling
+**Given** the user taps the third-party services toggle
+**When** the confirmation popup appears
+**Then** it clearly explains what will be disabled and allows cancel
+**Verify by**: UI inspection of popup content
+
+### AC-PM-003: Persistence across app restart
+**Given** Privacy Mode is enabled
+**When** the user force-closes and reopens the app
+**Then** Privacy Mode remains enabled and no third-party calls are made during startup
+**Verify by**: Appium E2E test checking toggle state after restart
+
+### AC-PM-004: Contextual messages on disabled features
+**Given** Privacy Mode is enabled
+**When** the user navigates to Swap, WalletConnect, or GIF search
+**Then** a message explains the feature is unavailable due to Privacy Mode
+**Verify by**: UI inspection of each affected screen
+
+## Edge Cases
+- User switches network while Privacy Mode is on → Privacy Mode remains on
+- App update while Privacy Mode is enabled → Privacy Mode remains enabled
+- User has pending WalletConnect session when enabling → Session is terminated
+- User enables during onboarding → All third-party services start disabled
