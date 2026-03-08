@@ -1,0 +1,75 @@
+---
+globs: test/e2e_appium/locators/**/*.py
+---
+
+# E2E Locator Patterns
+
+## Class Structure
+
+```python
+from locators.base_locators import BaseLocators
+
+
+class FeatureLocators(BaseLocators):
+    """Locators for <feature area>.
+
+    QML source: ui/path/to/Component.qml
+    """
+
+    ELEMENT_NAME = BaseLocators.resource_id_contains("objectNameFromQml")
+
+    @staticmethod
+    def element_by_value(value: str) -> tuple:
+        """Locator for <element> by <parameter>."""
+        return BaseLocators.xpath(
+            f"//*[contains(@resource-id,'prefix')][contains(@content-desc,'{value}')]"
+        )
+```
+
+## Locator Strategy (Priority Order)
+
+### 1. `resource_id_contains(value)` -- Preferred
+Maps to QML `objectName`. Most reliable.
+```python
+SEND_BUTTON = BaseLocators.resource_id_contains("statusChatInputSendButton")
+```
+
+### 2. `content_desc_contains(desc)` -- For Accessible.name elements
+```python
+SKIP_BUTTON = BaseLocators.content_desc_contains("[tid:introduceSkipStatusFlatButton]")
+```
+
+### 3. `xpath(value)` -- For compound conditions
+```python
+EMOJI_BUTTON = BaseLocators.xpath(
+    "//*[contains(@content-desc, '[tid:statusChatInputEmojiButton]') or "
+    "contains(@resource-id,'statusChatInputEmojiButton')]"
+)
+```
+
+### Avoid
+- `text_contains()` / `text_exact()` -- fragile, breaks with translations
+- `class_name()` -- too generic, rarely unique
+
+## Android Accessibility Tree Gotchas
+
+QML structure does NOT map 1:1 to the Android a11y tree. Always verify locators
+against `dump_page_source()` output from a real device.
+
+- **Invisible containers**: `StatusListView`, `StatusScrollView` often don't appear -- search children directly
+- **Compressed pubkeys**: `StatusMemberListItem` shows pubkeys, not display names
+- **Empty text on composites**: `StatusChatInfoButton` renders with empty text/content-desc
+- **Full resource-id path**: Android uses full QML path -- always use `contains(@resource-id, 'shortName')`
+
+## Docstring Convention
+
+Locator classes MUST have a docstring with:
+1. What screen/feature the locators target
+2. The QML source file path (if known)
+3. Limitations or warnings
+
+## Naming
+
+- Locator constants: `UPPER_SNAKE_CASE` (e.g., `SEND_BUTTON`, `PASSWORD_INPUT`)
+- Dynamic locator methods: `snake_case` (e.g., `message_by_content(text)`)
+- Locator classes: `CamelCase` with `Locators` suffix (e.g., `ChatLocators`)
