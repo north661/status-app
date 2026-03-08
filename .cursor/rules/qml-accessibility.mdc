@@ -1,0 +1,59 @@
+---
+globs: ui/**/*.qml
+---
+
+# QML Accessibility Standards for E2E Testing
+
+## objectName Convention
+
+Add `objectName` to all interactive and testable QML elements. Maps to `resource-id` on Android.
+
+**Naming**: camelCase, descriptive, prefixed with component context:
+- `"statusChatInputSendButton"` -- button in chat input area
+- `"statusMessageReplyCorner"` -- shape in message reply
+- `"chatCommandMenu_addImage"` -- action in a menu (underscore for menu items)
+
+```qml
+StatusFlatRoundButton {
+    id: commandBtn
+    objectName: "statusChatInputCommandButton"
+}
+```
+
+## Accessible Properties
+
+Add `Accessible.role` and `Accessible.name` for elements that need content-desc on Android.
+
+```qml
+import StatusQ.Core.Utils
+
+Item {
+    id: root
+    Accessible.role: Accessible.Group    // or .Button, .StaticText, .CheckBox, etc.
+    Accessible.name: Utils.formatAccessibleName("", root.objectName)
+}
+```
+
+## Common Accessible.role Values
+
+- `Accessible.Button` -- clickable controls
+- `Accessible.Group` -- containers, layout items
+- `Accessible.StaticText` -- labels, text displays
+- `Accessible.CheckBox` -- toggle/check controls
+- `Accessible.EditableText` -- input fields
+
+## Known Android A11y Tree Gaps
+
+| Component | Gap | Workaround |
+|-----------|-----|------------|
+| `StatusChatInfoButton` | title/subTitle not in text or content-desc | Verify by message presence or chat list name |
+| `StatusListView` | Container with objectName often invisible | Search for children directly |
+| `StatusMemberListItem` | Shows compressed pubkey, not userName | Match by position or count |
+| `StatusTagItem` | Close icon not in tree | Use KEYCODE_DEL on focused input |
+
+## Checklist Before Adding IDs
+
+1. Does the element already have an `objectName`? Check first to avoid duplicates.
+2. Is the element interactive or a verification target? Only add IDs to elements tests need.
+3. Use `objectName` for all elements. Add `Accessible` properties only for elements that need content-desc.
+4. Test the naming: `resource_id_contains("yourObjectName")` should match uniquely.

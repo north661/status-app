@@ -1,0 +1,64 @@
+---
+globs: test/e2e_appium/**/*.py
+---
+
+# E2E Appium Framework Standards
+
+## Architecture
+
+- **Page Object Model**: All UI interactions through page objects (`pages/`), never direct driver calls in tests
+- **Locators**: Defined in `locators/`, using `BaseLocators` helpers
+- **Tests**: In `tests/`, using `StepMixin` base class, async with `async with self.step()`
+- **Fixtures**: In `fixtures/` and `tests/*/conftest.py`
+
+## Page Object Rules
+
+- All methods return `bool` for success/failure (never raise on UI interaction failure)
+- Use `self.safe_click()` for clicks, `self.qt_safe_input()` for text input
+- Use `self.is_element_visible()` for visibility, `self.wait_for_condition()` for custom waits
+- Log errors with `self.logger.error()` before returning `False`
+- Never use `time.sleep()` or implicit waits
+
+## Linting Gate
+
+All Python code must pass `ruff check .` before committing.
+Config in `test/e2e_appium/pyproject.toml`.
+Run `ruff check . --fix` to auto-fix import sorting and simple issues.
+Do NOT add `# noqa` without a justifying explanation.
+
+## Code Quality
+
+- PEP8, SOLID, DRY, KISS, YAGNI
+- Type hints when helpful
+- Self-documenting code over comments -- document *why*, never *what*
+- Log before returning `False` in page object methods
+- Never log passwords, seed phrases, or private keys
+
+## Commenting & Docstrings
+
+### Required
+- Workarounds and non-obvious logic: explain *why*
+- Locator classes: include QML source path in docstring
+- Page object classes: one-liner docstring
+- Test classes and methods: docstrings describing feature area and user journey
+- Timeout values: explain when non-default
+
+### Prohibited
+- Restating what the code does
+- Commented-out code
+- TODO comments without context
+
+## Naming Conventions
+
+- Locator constants: `UPPER_SNAKE_CASE`
+- Dynamic locator methods: `snake_case`
+- Page object classes: `CamelCase` (e.g., `ChatPage`)
+- Locator classes: `CamelCase` + `Locators` suffix
+- Test classes: `Test` prefix + `CamelCase`
+- Test methods: `test_` + `snake_case`
+- Test helpers: `_snake_case` (private)
+
+## Commit Messages
+
+Conventional Commits: `<type>[scope]: <description>`.
+Types: feat, fix, test, docs, refactor, chore, ci, build.

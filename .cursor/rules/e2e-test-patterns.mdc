@@ -1,0 +1,89 @@
+---
+globs: test/e2e_appium/tests/**/*.py
+---
+
+# E2E Test Patterns
+
+## Test Class Structure
+
+```python
+"""Tests for <feature area> in <context>."""
+
+import pytest
+
+from pages.app import App
+from utils.multi_device_helpers import StepMixin
+from utils.generators import generate_account_name
+
+
+@pytest.mark.messaging  # feature area marker
+@pytest.mark.smoke       # suite marker
+@pytest.mark.device_count(2)
+class TestFeatureName(StepMixin):
+    """Description of test coverage."""
+
+    UI_TIMEOUT = 30
+
+    async def test_example(self) -> None:
+        """Describe the user journey or behaviour being verified."""
+        sender = self.device
+        receiver = self.get_device(1)
+
+        async with self.step(sender, "Send message"):
+            chat_page = ChatPage(sender.driver)
+            assert chat_page.send_message(msg), "Failed to send message"
+```
+
+## Required Patterns
+
+- **Base class**: All test classes inherit from `StepMixin`
+- **Device access**: `self.device` for first device, `self.get_device(N)` for additional
+- **Steps**: Wrap all device operations in `async with self.step(device, "description")`
+- **Test methods**: `async def test_*` (asyncio_mode = auto in pytest.ini)
+- **Assertions**: Always include a failure message: `assert condition, "Descriptive message"`
+- **Test data**: Use `utils.generators` -- never hardcode names, passwords, etc.
+- **Timeouts**: Use `self.UI_TIMEOUT` (30s) for operations that depend on app/network state
+
+## Multi-Device Tests (3+ Devices)
+
+For tests requiring 3+ devices, use `StepMixin` with `@pytest.mark.device_count(N)`.
+Do NOT use `established_chat` (2-device only).
+
+```python
+@pytest.mark.device_count(3)
+@pytest.mark.timeout(900)  # 15 min for 3-device Waku sync
+class TestGroupChat(StepMixin):
+    DM_TIMEOUT = 180  # Waku P2P delivery can take up to 3 minutes
+
+    async def test_group_flow(self) -> None:
+        user_one = self.device
+        user_two = self.get_device(1)
+        user_three = self.get_device(2)
+```
+
+## Docstring Requirements
+
+Every test class and test method requires a docstring:
+
+- **Test class**: Describe feature area and fixture/device strategy
+- **Test method**: Describe the user journey or behaviour being verified
+- Include `Multi-device:` note if test verifies cross-device behaviour
+- Include `Desktop parity:` reference if porting from Squish test
+
+## Anti-Patterns (Never Do)
+
+- `time.sleep()` or `await asyncio.sleep()` -- use `wait_for_condition()` or `is_element_visible()` with timeout
+- Direct driver calls in tests -- always go through page objects
+- Hardcoded test data -- use `generate_account_name()`, `generate_password()`, etc.
+- Implicit waits -- use explicit waits with specific timeouts
+- Inline locators -- define them in the locator class
+- Commented-out code -- delete it, git has history
+
+## Markers Reference
+
+- `@pytest.mark.device_count(N)` -- N devices needed
+- `@pytest.mark.smoke` / `@pytest.mark.gate` -- suite level
+- `@pytest.mark.messaging` / `@pytest.mark.wallet` / `@pytest.mark.onboarding` -- feature area
+- `@pytest.mark.raw_devices` -- skip onboarding, get raw sessions
+- `@pytest.mark.timeout(N)` -- custom timeout (use 900 for 3-device tests)
+- `@pytest.mark.skip(reason="...")` -- skip with documented reason

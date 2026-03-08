@@ -1,0 +1,80 @@
+---
+globs: docs/FURPS/**/*.md
+---
+
+# FURPS Requirements Quality Standards
+
+When editing or reviewing FURPS documents, enforce these quality criteria.
+
+## Structure
+
+Every FURPS document must include:
+
+1. **Header**: Epic link, Figma link (if applicable), Risk Level
+2. **Summary**: 2-3 sentence plain-language description
+3. **Functionality**: Implementation-free statements of what the feature does
+4. **Usability**: User experience requirements
+5. **Reliability**: Error handling, edge cases, recovery behaviour
+6. **Performance**: Measurable criteria with specific numbers
+7. **Security** (if applicable): For wallet/crypto/privacy features
+8. **Acceptance Criteria**: Given/When/Then format with verification method
+9. **Edge Cases**: Boundary conditions with expected behaviour
+
+## ISO 29148 Quality Checks
+
+Every requirement MUST be:
+- **Verifiable**: Testable with clear pass/fail (not "should be fast")
+- **Unambiguous**: Single interpretation only (not "user-friendly")
+- **Singular**: One requirement per statement
+- **Complete**: All conditions and constraints stated
+- **Implementation-free**: States WHAT, not HOW
+- **Traceable**: Has an ID, linked to epic and tests
+
+## Flag These Vague Terms
+
+| Vague Term | Replace With |
+|------------|-------------|
+| "fast" | "< X seconds" (specify threshold) |
+| "smooth" | "> X FPS" or "< X ms latency" |
+| "secure" | Specific security property (encrypted at rest, etc.) |
+| "user-friendly" | Specific usability criterion (< 3 clicks, visible feedback) |
+| "reliable" | Specific failure rate or recovery behaviour |
+| "seamless" | Specific user flow without interruption |
+| "properly" / "correctly" | Specific expected behaviour or output |
+| "responsive" | "< X ms" or "adapts to viewport width" |
+| "should" | "SHALL" for mandatory, "SHOULD" for recommended (RFC 2119) |
+
+## Acceptance Criteria Format
+
+```markdown
+### AC-[FEATURE]-[NUM]: [Short title]
+**Given** [precondition]
+**When** [action]
+**Then** [verifiable outcome]
+**Verify by**: [How to test -- manual QA, Appium E2E, API test, etc.]
+```
+
+## Security-Sensitive Features
+
+For wallet, crypto, or privacy features (see feature area table below), ALWAYS include:
+1. **Threat considerations**: What could go wrong?
+2. **Data protection**: What sensitive data is involved?
+3. **Network exposure**: What external calls are made?
+4. **Recovery**: What happens on failure?
+
+| Feature Area | Security Level |
+|-------------|---------------|
+| Wallet | High |
+| Privacy | High |
+| Onboarding | High (seed phrases) |
+| Browser (Dapp) | High (transaction signing) |
+| Messaging | Medium |
+| Communities | Medium |
+| Settings | Medium |
+
+## Suggested Test Coverage Section
+
+Include a section mapping acceptance criteria to test types:
+- **Manual QA**: Key scenarios to test manually
+- **Appium E2E (mobile)**: Suggested pytest test scenarios
+- **Squish E2E (desktop)**: Suggested desktop test scenarios (if applicable)
