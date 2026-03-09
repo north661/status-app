@@ -142,6 +142,82 @@ class ChatLocators(BaseLocators):
             f"//*[contains(@resource-id,'statusPinMessageDetails')]"
         )
     
+    # ===== Chat Input UX: Formatting Toolbar =====
+    # QML: StatusChatInput.qml (formatting toolbar shown above input when text is selected)
+    # NOTE: objectNames below are provisional — verify against StatusChatInput.qml after UX changes land.
+    FORMAT_TOOLBAR = BaseLocators.resource_id_contains("chatInputFormatToolbar")
+    FORMAT_BOLD_BUTTON = BaseLocators.resource_id_contains("chatInputFormatBoldButton")
+    FORMAT_ITALIC_BUTTON = BaseLocators.resource_id_contains(
+        "chatInputFormatItalicButton"
+    )
+    FORMAT_CODE_BUTTON = BaseLocators.resource_id_contains("chatInputFormatCodeButton")
+    FORMAT_STRIKETHROUGH_BUTTON = BaseLocators.resource_id_contains(
+        "chatInputFormatStrikethroughButton"
+    )
+
+    # ===== Chat Input UX: Mention Autocomplete =====
+    # QML: StatusChatInput.qml → SuggestionBox / MentionSuggestionPopup
+    MENTION_SUGGESTIONS_POPUP = BaseLocators.resource_id_contains(
+        "mentionSuggestionsPopup"
+    )
+    MENTION_SUGGESTIONS_LIST = BaseLocators.resource_id_contains(
+        "mentionSuggestionsList"
+    )
+
+    @staticmethod
+    def mention_suggestion_item(display_name: str) -> tuple:
+        """Locator for a specific user in the mention suggestions popup."""
+        escaped = display_name.replace('"', '\\"')
+        return BaseLocators.xpath(
+            f"//*[contains(@resource-id,'mentionSuggestion')]"
+            f"[contains(@content-desc,\"{escaped}\") or contains(@text,\"{escaped}\")]"
+        )
+
+    # ===== Chat Input UX: Link Preview =====
+    # QML: StatusChatInput.qml → LinkPreviewMiniCard
+    LINK_PREVIEW_CONTAINER = BaseLocators.resource_id_contains("chatInputLinkPreview")
+    LINK_PREVIEW_TITLE = BaseLocators.resource_id_contains("linkPreviewTitle")
+    LINK_PREVIEW_CLOSE = BaseLocators.resource_id_contains("linkPreviewCloseButton")
+
+    # ===== Formatted Message Content =====
+    # Rendered messages in chat log — formatting changes the visual presentation
+    # but content-desc typically holds the plain text content.
+
+    @staticmethod
+    def message_with_bold(content: str) -> tuple:
+        """Locator for a message containing bold-rendered text.
+
+        After markdown rendering, bold text may appear in a child element
+        with resource-id 'boldText' or the message content-desc contains the plain text.
+        """
+        escaped = content.replace('"', '\\"')
+        return BaseLocators.xpath(
+            f"//*[contains(@resource-id,'StatusTextMessage_chatText')]"
+            f"[contains(@content-desc,\"{escaped}\")]"
+        )
+
+    @staticmethod
+    def message_with_italic(content: str) -> tuple:
+        """Locator for a message containing italic-rendered text."""
+        escaped = content.replace('"', '\\"')
+        return BaseLocators.xpath(
+            f"//*[contains(@resource-id,'StatusTextMessage_chatText')]"
+            f"[contains(@content-desc,\"{escaped}\")]"
+        )
+
+    @staticmethod
+    def message_with_code_block(content: str) -> tuple:
+        """Locator for a message containing code block content.
+
+        Code blocks may render in a distinct child element; fallback to
+        checking message content-desc for the code text.
+        """
+        escaped = content.replace('"', '\\"')
+        return BaseLocators.xpath(
+            f"//*[contains(@resource-id,'StatusTextMessage_chatText')]"
+            f"[contains(@content-desc,\"{escaped}\")]"
+        )
+
     # Reaction on message - emoji reactions shown below the message
     # QML: StatusMessageEmojiReactions has objectName "statusMessageEmojiReactions"
     # Each reaction button has objectName "messageReaction_{emoji}" and Accessible.name "{emoji}"

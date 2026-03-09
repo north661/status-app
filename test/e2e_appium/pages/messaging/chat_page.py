@@ -307,4 +307,110 @@ class ChatPage(BasePage):
             return False
         return self.safe_click(self.locators.ADD_IMAGE_ACTION, timeout=5)
 
+    # ===== Chat Input UX: Formatting =====
+
+    def send_formatted_message(self, markdown_text: str, timeout: int | None = None) -> bool:
+        """Send a message with markdown formatting.
+
+        The input field accepts markdown syntax (e.g. **bold**, *italic*, `code`).
+        This method types the raw markdown and sends it; the app renders formatting.
+        """
+        self.dismiss_introduce_prompt(timeout=2)
+        payload = f"{markdown_text}\n"
+        return self.qt_safe_input(
+            self.locators.MESSAGE_INPUT,
+            payload,
+            verify=False,
+            timeout=timeout,
+        )
+
+    def type_in_input(self, text: str, timeout: int | None = None) -> bool:
+        """Type text into the message input without sending (no trailing newline)."""
+        return self.qt_safe_input(
+            self.locators.MESSAGE_INPUT,
+            text,
+            verify=False,
+            timeout=timeout,
+        )
+
+    def clear_message_input(self, timeout: int = 5) -> bool:
+        """Clear the message input field."""
+        return self._clear_input_field(self.locators.MESSAGE_INPUT, timeout=timeout)
+
+    def get_message_input_text(self, timeout: int = 4) -> str | None:
+        """Read current text from the message input field."""
+        return self._read_element_text(self.locators.MESSAGE_INPUT, timeout=timeout)
+
+    def tap_send_button(self, timeout: int = 5) -> bool:
+        """Tap the send button explicitly (useful after formatting text without newline)."""
+        return self.safe_click(self.locators.SEND_BUTTON, timeout=timeout)
+
+    # ===== Chat Input UX: Formatted Message Verification =====
+
+    def message_has_bold_text(self, content: str, timeout: int = 10) -> bool:
+        """Verify a sent message contains bold-formatted text."""
+        locator = self.locators.message_with_bold(content)
+        return self.is_element_visible(locator, timeout=timeout)
+
+    def message_has_italic_text(self, content: str, timeout: int = 10) -> bool:
+        """Verify a sent message contains italic-formatted text."""
+        locator = self.locators.message_with_italic(content)
+        return self.is_element_visible(locator, timeout=timeout)
+
+    def message_has_code_block(self, content: str, timeout: int = 10) -> bool:
+        """Verify a sent message contains code block content."""
+        locator = self.locators.message_with_code_block(content)
+        return self.is_element_visible(locator, timeout=timeout)
+
+    # ===== Chat Input UX: Mention Autocomplete =====
+
+    def is_mention_autocomplete_visible(self, timeout: int = 5) -> bool:
+        """Check if the @mention suggestions popup is visible."""
+        return self.is_element_visible(
+            self.locators.MENTION_SUGGESTIONS_POPUP, timeout=timeout
+        )
+
+    def select_mention_suggestion(self, display_name: str, timeout: int = 5) -> bool:
+        """Select a user from the mention autocomplete suggestions."""
+        locator = self.locators.mention_suggestion_item(display_name)
+        if not self.is_element_visible(locator, timeout=timeout):
+            self.logger.error(f"Mention suggestion '{display_name}' not visible")
+            return False
+        return self.safe_click(locator, timeout=timeout)
+
+    # ===== Chat Input UX: Link Preview =====
+
+    def is_link_preview_visible(self, timeout: int = 10) -> bool:
+        """Check if a link preview card is visible above the input."""
+        return self.is_element_visible(
+            self.locators.LINK_PREVIEW_CONTAINER, timeout=timeout
+        )
+
+    def dismiss_link_preview(self, timeout: int = 5) -> bool:
+        """Dismiss the link preview by tapping its close button."""
+        if not self.is_link_preview_visible(timeout=2):
+            return True
+        return self.safe_click(self.locators.LINK_PREVIEW_CLOSE, timeout=timeout)
+
+    # ===== Chat Input UX: Multiline / Scrolling =====
+
+    def is_input_field_present(self, timeout: int = 5) -> bool:
+        """Check that the message input field element is present and visible."""
+        return self.is_element_visible(self.locators.MESSAGE_INPUT, timeout=timeout)
+
+    def get_input_field_height(self, timeout: int = 5) -> int | None:
+        """Return the height of the message input field element in pixels.
+
+        Useful for verifying that multi-line input causes the field to grow.
+        Returns None if the element is not found.
+        """
+        element = self.find_element_safe(self.locators.MESSAGE_INPUT, timeout=timeout)
+        if not element:
+            return None
+        try:
+            return int(element.rect.get("height", 0))
+        except Exception as e:
+            self.logger.debug(f"Failed to read input field height: {e}")
+            return None
+
 
