@@ -1,0 +1,98 @@
+---
+globs: specs/**/*.md
+---
+
+# Feature Spec Quality Standards
+
+When editing or reviewing feature specs, enforce these quality criteria.
+
+## Required Structure
+
+Every spec MUST include:
+
+1. **YAML frontmatter** with all required fields (id, code, title, area, keywords, platforms, risk, status, app_version)
+2. **Summary**: 2-3 sentence plain-language description
+3. **Scenarios**: At least one scenario in structured format
+4. **Changelog**: Version history table
+
+Optional sections (include when applicable):
+- **Requirements**: RFC 2119 constraints (performance, reliability, security)
+- **Edge Cases**: Boundary conditions and error states
+- **Platform Differences**: Where desktop/iOS/Android diverge
+- **Regression Notes**: Historical fragility and tribal knowledge
+
+## Scenario Quality Checks
+
+Every scenario MUST have all five fields:
+- **Priority**: One of Critical, High, Medium, Low
+- **Platforms**: Specific platforms (Desktop, iOS, Android) — not "all"
+- **Preconditions**: Explicit list — never assume context
+- **Action**: Describes user intent, NOT specific UI interactions (no "click button X", "tap field Y")
+- **Expected**: Concrete, verifiable outcomes with clear pass/fail criteria
+
+## Requirement Language (RFC 2119)
+
+Use uppercase RFC 2119 keywords for requirement strength:
+- **SHALL** / **MUST**: Absolute requirement — failure is a defect
+- **SHALL NOT** / **MUST NOT**: Absolute prohibition
+- **SHOULD**: Recommended but deviations are acceptable with justification
+- **MAY**: Optional
+
+Never use lowercase "should", "must", "needs to" in requirements. These are ambiguous.
+
+## Flag These Vague Terms
+
+| Vague Term | Replace With |
+|------------|-------------|
+| "fast" | "< X seconds" (specify threshold) |
+| "smooth" | "> X FPS" or "< X ms latency" |
+| "secure" | Specific security property (encrypted at rest, etc.) |
+| "user-friendly" | Specific usability criterion |
+| "reliable" | Specific failure rate or recovery behaviour |
+| "seamless" | Specific user flow without interruption |
+| "properly" / "correctly" | Specific expected behaviour or output |
+| "responsive" | "< X ms" or "adapts to viewport width" |
+| "works" | Specific observable outcome |
+| "displays properly" | Specific visual state or content |
+
+## ID Rules
+
+- Scenario IDs: `SC-{CODE}-{NUM}` (e.g., SC-CHAN-01)
+- Edge case IDs: `EC-{CODE}-{NUM}` (e.g., EC-CHAN-01)
+- `{CODE}` MUST match the spec's `code` frontmatter field
+- IDs are permanent — NEVER renumber
+- Deleted IDs are NEVER reused
+- New scenarios always get the next available number
+
+## Frontmatter Validation
+
+Required fields and accepted values:
+
+```yaml
+id: string          # kebab-case, unique across all specs
+code: string        # UPPERCASE, 2-5 chars, unique across all specs
+title: string       # Human-readable feature name
+area: string        # One of: communities, wallet, messaging, onboarding, settings
+keywords: [string]  # Domain terms for search and bug matching
+platforms: [string]  # Subset of: desktop, ios, android
+risk: string        # One of: low, medium, high, critical
+status: string      # One of: draft, active, deprecated
+app_version: string # Semver or release number this spec reflects
+```
+
+Optional fields:
+```yaml
+refs:
+  epic: string      # GitHub issue URL
+  figma: string     # Figma design URL
+automation:
+  desktop: string   # Path to desktop test directory in status-app
+  mobile: string    # Path to mobile test directory in status-app
+```
+
+## Cross-Reference Rules
+
+- Link to other specs using relative paths: `[Community Permissions](community-permissions.md)`
+- Link to FURPS docs using full GitHub URLs: `[Communities FURPS](https://github.com/status-im/status-app/blob/develop/docs/FURPS/communities.md)`
+- Link to test code using repository-relative paths: `test/e2e/tests/communities/`
+- Reference scenario IDs in plain text: "See SC-PERM-03 for permission validation"

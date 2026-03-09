@@ -1,0 +1,55 @@
+---
+globs: specs/**/*.md
+---
+
+# Spec Creation Guide for AI
+
+Instructions for generating feature specs from various inputs.
+
+## Generating from a FURPS document
+
+1. Extract functional requirements and convert each to one or more scenarios
+2. Convert performance/reliability numbers into Requirements section entries using RFC 2119
+3. Map security considerations to edge cases
+4. Flag any vague language (see spec-quality.mdc) and request clarification or propose specific thresholds
+
+## Generating from an epic or issue
+
+1. Read the issue description and acceptance criteria
+2. Create one scenario per acceptance criterion
+3. Infer edge cases from the description (error states, boundary values, permission checks)
+4. Set `refs.epic` to the issue URL
+5. Check existing specs in the same area for overlapping scenarios
+
+## Generating from Figma designs
+
+1. Identify each distinct screen state (empty, loading, populated, error)
+2. Create scenarios for each user action visible in the design
+3. Note platform-specific layouts for the Platform Differences table
+4. Set `refs.figma` to the Figma URL
+5. Flag any interactions that are ambiguous in the design
+
+## Generating from existing test code
+
+1. Read the test file and extract each test function
+2. Map `with step(...)` blocks or function names to scenario actions
+3. Map assertions to Expected outcomes
+4. Map `@pytest.mark.case(...)` IDs for reference
+5. Map `@pytest.mark.parametrize(...)` parameters to scenario variants
+6. Note any skipped tests (`@pytest.mark.skip`) and check if the scenario is still valid
+
+## Writing style
+
+- Action field: describe user intent ("Create a channel named X") not UI mechanics ("Click the + button, then fill in the name field, then click Create")
+- Expected field: state observable outcomes ("Channel X appears in the list") not implementation details ("Database record is created")
+- Preconditions: be explicit about every assumption. Never rely on implicit state from previous scenarios — each scenario MUST be independently understandable
+- Keep scenarios atomic: one logical action per scenario. If a test covers create-edit-delete, split into three scenarios
+
+## After generating
+
+1. Verify all frontmatter fields are populated
+2. Verify the `code` field is unique (search existing specs)
+3. Verify scenario IDs are sequential and use the correct code prefix
+4. Run the quality checklist from guide.md
+5. Update coverage.md to reflect the new spec
+6. Update SUMMARY.md to add the spec to navigation
