@@ -28,14 +28,23 @@ view and post in channels according to their permissions.
 ## Requirements
 
 - Every community SHALL have a default "General" channel created automatically
+- Channel names SHALL be between 1 and 24 characters
+- Channel names SHALL match the allowed pattern: letters, numbers, underscores,
+  periods, hyphens, and spaces (regex: `^[a-zA-Z0-9\-_\.\u0020]+$`)
+- Channel descriptions SHALL NOT exceed 140 characters
 - Channel names SHALL be unique within a community
-- Channel names SHALL support Unicode characters including emoji
 - Only users with the Owner, Token Master, or Admin role SHALL be able to
   create, edit, or delete channels
 - Members without the appropriate role SHALL NOT see create, edit, or delete
-  controls for channels
+  controls for channels (edit channel menu item requires `isCommunityChat &&
+  amIChatAdmin`)
 - Users without read permission on a channel MUST NOT be able to read messages
   in that channel (encryption SHALL be used)
+- The channel creation flow SHALL present steps for: channel details, colour
+  selection, and channel permissions
+- Channels MAY have a custom emoji, colour, and category assignment
+- Channels MAY be configured with "viewers can post reactions" and "hide
+  channel if permissions not met" settings
 - Channel list updates SHOULD propagate to all community members within
   10 minutes (per Community Description update interval)
 - Channel operations (create, edit, delete) SHOULD complete within 5 seconds
@@ -168,29 +177,30 @@ view and post in channels according to their permissions.
 
 ## Edge Cases
 
-### EC-CHAN-01: Channel name at maximum length
+### EC-CHAN-01: Channel name at maximum length (24 characters)
 
 - **Priority**: Medium
 - **Platforms**: Desktop, iOS, Android
 - **Preconditions**:
   - Signed in as community owner
-- **Action**: Create a channel with a name at the maximum character limit
+- **Action**: Create a channel with a name of exactly 24 characters, then
+  attempt a name of 25 characters
 - **Expected**:
-  - Channel is created successfully if within the limit
-  - Input is rejected or truncated with a visible indication if exceeding
-    the limit
+  - 24-character name: channel is created successfully
+  - 25-character name: input is rejected or truncated at the 24-character limit
 
-### EC-CHAN-02: Channel name with special characters
+### EC-CHAN-02: Channel name with disallowed characters
 
 - **Priority**: Medium
 - **Platforms**: Desktop, iOS, Android
 - **Preconditions**:
   - Signed in as community owner
-- **Action**: Create a channel with a name containing emoji, Unicode
-  characters, mixed scripts, or special punctuation
+- **Action**: Create a channel with a name containing characters outside the
+  allowed pattern (e.g., `@`, `#`, `!`, `&`, emoji, non-Latin scripts)
 - **Expected**:
-  - Channel is created with the name preserved correctly
-  - Channel name renders correctly in the channel list and header
+  - Validation error is displayed: "Only letters, numbers, underscores,
+    periods, whitespaces and hyphens allowed"
+  - Channel creation is blocked until the name is corrected
 
 ### EC-CHAN-03: Duplicate channel name
 
