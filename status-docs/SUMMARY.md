@@ -16,6 +16,11 @@
 
 ## Settings
 
+## Browser
+
+## Other
+
 ## Reference
 
 * [Spec Template](templates/spec-template.md)
+* [Spec Generation Prompts](prompts/generate-all-specs.md)
