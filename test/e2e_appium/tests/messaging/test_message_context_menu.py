@@ -15,10 +15,10 @@ from contextlib import asynccontextmanager
 
 import pytest
 
+from config.logging_config import get_logger
 from pages.app import App
 from pages.messaging.chat_page import ChatPage
 from pages.messaging.message_context_menu_page import MessageContextMenuPage
-from config.logging_config import get_logger
 
 
 def _unique_message(prefix: str = "test") -> str:
@@ -69,10 +69,10 @@ class TestMessageContextMenu:
         self.logger.info("Navigating to Messages tab")
         app.click_messages_button()
         chat_page.dismiss_backup_prompt(timeout=3)
-        
-        # Wait a moment for UI to settle
+
+        # Allow the UI to settle after navigation (BrowserStack latency)
         await asyncio.sleep(0.5)
-        
+
         # Check if message input appeared (we might already be in a chat)
         if chat_page.wait_for_message_input(timeout=5):
             self.logger.info("Message input ready after navigation")
@@ -134,9 +134,10 @@ class TestMessageContextMenu:
         self.logger.info("Navigating secondary to Messages tab")
         secondary_app.click_messages_button()
         secondary_chat.dismiss_backup_prompt(timeout=3)
-        
+
+        # Allow the UI to settle after navigation (BrowserStack latency)
         await asyncio.sleep(0.5)
-        
+
         # Try to open chat with primary
         if hasattr(self, 'ctx') and self.ctx.primary_suffix:
             primary_name = None
@@ -231,7 +232,6 @@ class TestMessageContextMenu:
             # Note: Clipboard verification would require platform-specific APIs
 
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_delete_own_message(self) -> None:
         """Verify deleting own message removes it from both devices.
         
@@ -245,8 +245,6 @@ class TestMessageContextMenu:
 
         async with self.step("Ensure secondary is in chat and verify message visible"):
             secondary_chat = await self._ensure_secondary_in_chat()
-            # Give time for message to sync to secondary
-            await asyncio.sleep(2)
             assert secondary_chat.message_exists(test_message, timeout=self.UI_TIMEOUT), (
                 "Secondary should see message before deletion"
             )
@@ -262,22 +260,17 @@ class TestMessageContextMenu:
             assert context_menu.confirm_delete(), "Failed to confirm deletion"
 
         async with self.step("Verify message deleted on primary"):
-            # Wait for UI to update after deletion
-            await asyncio.sleep(1)
-            # Verify message is gone
-            assert not chat_page.message_exists(test_message, timeout=5), (
+            assert not chat_page.message_exists(test_message, timeout=10), (
                 "Primary: Message should be deleted"
             )
 
         async with self.step("Verify message deleted on secondary"):
-            # Allow time for sync
-            await asyncio.sleep(2)
-            assert not secondary_chat.message_exists(test_message, timeout=5), (
+            assert not secondary_chat.message_exists(test_message, timeout=self.UI_TIMEOUT), (
                 "Secondary: Message should be deleted (sync)"
             )
 
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=1, reruns_delay=5)
+    @pytest.mark.gate
     async def test_reply_to_message(self) -> None:
         """Verify replying to a message activates reply mode.
         
@@ -309,7 +302,6 @@ class TestMessageContextMenu:
             chat_page.cancel_reply(timeout=3)
 
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_pin_message(self) -> None:
         """Verify pinning a message via context menu syncs to both devices.
         
@@ -347,9 +339,6 @@ class TestMessageContextMenu:
             )
 
         async with self.step("Verify message is pinned on primary device"):
-            # Allow time for pin state to update
-            await asyncio.sleep(1)
-            # Check for pinned indicator (statusPinMessageDetails)
             assert chat_page.message_is_pinned(setup_message, timeout=self.UI_TIMEOUT), (
                 "Primary: Message should show 'Pinned by' indicator after pinning"
             )
@@ -358,10 +347,7 @@ class TestMessageContextMenu:
             # Ensure secondary is in the chat
             secondary_chat = await self._ensure_secondary_in_chat()
             # Setup message is already confirmed visible on secondary (from fixture)
-            # Just need to wait for pin state to sync
-            await asyncio.sleep(3)
-            # Check for pinned indicator
-            assert secondary_chat.message_is_pinned(setup_message, timeout=30), (
+            assert secondary_chat.message_is_pinned(setup_message, timeout=self.UI_TIMEOUT), (
                 "Secondary: Message should show 'Pinned by' indicator (sync)"
             )
 
@@ -405,9 +391,6 @@ class TestMessageContextMenu:
             )
 
         async with self.step("Verify reaction appears on primary device"):
-            # Allow time for reaction to appear
-            await asyncio.sleep(1)
-            # Check for reaction emoji (messageReaction_{emoji_code}) on the message
             assert chat_page.message_has_reaction(emoji_code, timeout=self.UI_TIMEOUT), (
                 f"Primary: Reaction {emoji_code} should appear on message after adding"
             )
@@ -416,8 +399,6 @@ class TestMessageContextMenu:
             # Ensure secondary is in the chat
             secondary_chat = await self._ensure_secondary_in_chat()
             # Setup message is already confirmed visible on secondary (from fixture)
-            # Just need to wait for reaction to sync
-            await asyncio.sleep(2)
             assert secondary_chat.message_has_reaction(emoji_code, timeout=self.UI_TIMEOUT), (
                 f"Secondary: Reaction {emoji_code} should appear on message (sync)"
             )

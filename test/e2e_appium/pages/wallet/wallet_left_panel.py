@@ -1,8 +1,10 @@
 import base64
-from typing import List, Optional
+
+from selenium.webdriver.remote.webelement import WebElement
+
+from locators.wallet.accounts_locators import WalletAccountsLocators
 
 from ..base_page import BasePage
-from locators.wallet.accounts_locators import WalletAccountsLocators
 from .add_edit_account_modal import AddEditAccountModal
 from .keycard_auth_modal import KeycardAuthenticationModal
 from .receive_modal import ReceiveModal
@@ -20,7 +22,7 @@ class WalletLeftPanel(BasePage):
             timeout=timeout,
         )
 
-    def copy_account_address_via_context_menu(self, index: int = 0, timeout: Optional[int] = 10) -> Optional[str]:
+    def copy_account_address_via_context_menu(self, index: int = 0, timeout: int | None = 10) -> str | None:
         """Copy wallet address via account context menu.
         
         Args:
@@ -35,7 +37,7 @@ class WalletLeftPanel(BasePage):
             return None
 
         clipboard_reset = False
-        before_clipboard: Optional[str] = None
+        before_clipboard: str | None = None
         try:
             before_clipboard = (self.driver.get_clipboard_text() or "").strip()
         except Exception:
@@ -83,18 +85,29 @@ class WalletLeftPanel(BasePage):
             return False
         
         if self.wait_for_condition(check_clipboard, timeout=3, poll_interval=0.1):
+            # Wait for the context menu to fully dismiss before returning
+            self.wait_for_invisibility(self.locators.ACCOUNT_CONTEXT_MENU, timeout=3)
             return clipboard_result[0]
-        
+
         self.logger.error("Clipboard did not contain a valid address after copy")
         return None
 
-    def open_receive_modal(self, timeout: Optional[int] = 10) -> Optional[ReceiveModal]:
+    def open_receive_modal(self, timeout: int | None = 10) -> ReceiveModal | None:
         """Open the receive modal from wallet footer.
 
         Returns:
             ReceiveModal if opened successfully, None otherwise.
         """
-        if not self.safe_click(self.locators.FOOTER_RECEIVE, timeout=timeout):
+        # FOOTER_RECEIVE uses resource-id; fall back to content-desc
+        # which matches the pattern of the other footer button locators.
+        fallback = self.locators.content_desc_contains(
+            "[tid:walletFooterReceiveButton]"
+        )
+        if not self.safe_click(
+            self.locators.FOOTER_RECEIVE,
+            fallback_locators=[fallback],
+            timeout=timeout,
+        ):
             self.logger.error("Failed to click receive button in wallet footer")
             return None
 
@@ -104,12 +117,12 @@ class WalletLeftPanel(BasePage):
         self.logger.error("Receive modal did not appear after clicking receive button")
         return None
 
-    def open_add_account_popup(self) -> Optional[AddEditAccountModal]:
+    def open_add_account_popup(self) -> AddEditAccountModal | None:
         self.safe_click(self.locators.ADD_ACCOUNT_BUTTON, timeout=5)
         modal = AddEditAccountModal(self.driver)
         return modal if modal.is_displayed(timeout=10) else None
 
-    def add_account(self, name: str, auth_password: Optional[str] = None) -> bool:
+    def add_account(self, name: str, auth_password: str | None = None) -> bool:
         modal = self.open_add_account_popup()
         if not modal:
             self.logger.error("Failed to open add account modal")
@@ -135,19 +148,23 @@ class WalletLeftPanel(BasePage):
 
         return True
 
-    def account_rows(self) -> List:
+    def account_rows(self) -> list[WebElement]:
         try:
             return self.driver.find_elements(*self.locators.ACCOUNT_ROW_ANY)
         except Exception as e:
             self.logger.debug(f"account_rows lookup failed: {e}")
             return []
 
-    def account_names(self) -> List[str]:
+    def account_names(self) -> list[str]:
         """Extract account names from visible account rows."""
-        names: List[str] = []
+        names: list[str] = []
         for row in self.account_rows():
             try:
-                desc = row.get_attribute("content-desc") or row.get_attribute("text") or ""
+                desc = row.get_attribute("content-desc")
+                if not desc or desc == "null":
+                    desc = row.get_attribute("text")
+                if not desc or desc == "null":
+                    desc = ""
                 if desc:
                     name = desc.split(" [tid:", 1)[0]
                     if name:
@@ -208,7 +225,7 @@ class WalletLeftPanel(BasePage):
 
         return True
 
-    def _complete_account_deletion(self, auth_password: Optional[str] = None) -> bool:
+    def _complete_account_deletion(self, auth_password: str | None = None) -> bool:
         """Complete account deletion after context menu is open.
 
         Clicks Delete, handles confirmation modal and authentication.
@@ -238,13 +255,13 @@ class WalletLeftPanel(BasePage):
 
         return True
 
-    def delete_latest_account_via_menu(self, auth_password: Optional[str] = None) -> bool:
+    def delete_latest_account_via_menu(self, auth_password: str | None = None) -> bool:
         if not self.open_context_menu_for_row(index=-1):
             self.logger.error("Failed to open account context menu via long-press")
             return False
         return self._complete_account_deletion(auth_password)
 
-    def find_account_element_by_name(self, name: str, timeout: int = 10):
+    def find_account_element_by_name(self, name: str, timeout: int = 10) -> WebElement | None:
         """Find account row element by its name.
 
         Args:
@@ -262,7 +279,7 @@ class WalletLeftPanel(BasePage):
         )
         return self.find_element_safe(locator, timeout=timeout)
 
-    def delete_account_by_name(self, name: str, auth_password: Optional[str] = None) -> bool:
+    def delete_account_by_name(self, name: str, auth_password: str | None = None) -> bool:
         """Delete account by name via context menu.
 
         Args:

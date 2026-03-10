@@ -1,8 +1,8 @@
 import pytest
 
-from pages.wallet.wallet_left_panel import WalletLeftPanel
 from pages.app import App
 from pages.onboarding.welcome_back_page import WelcomeBackPage
+from pages.wallet.wallet_left_panel import WalletLeftPanel
 from utils.generators import generate_account_name
 from utils.multi_device_helpers import StepMixin
 
@@ -11,6 +11,7 @@ class TestWalletAccountsBasic(StepMixin):
     @pytest.mark.gate
     @pytest.mark.wallet
     @pytest.mark.smoke
+    @pytest.mark.timeout(900)
     async def test_add_and_delete_generated_account(self):
         async with self.step(self.device, "Verify wallet panel loaded"):
             panel = WalletLeftPanel(self.device.driver)
@@ -34,9 +35,8 @@ class TestWalletAccountsBasic(StepMixin):
 
         async with self.step(self.device, "Open Receive modal and verify address match"):
             # Re-select account after context menu closes (ensures receive button is enabled)
-            account_rows = panel.account_rows()
-            account_rows[0].click()
-            
+            panel.safe_click(panel.locators.ACCOUNT_ROW_ANY, timeout=5)
+
             receive_modal = panel.open_receive_modal()
             assert receive_modal is not None, "Failed to open receive modal"
             assert receive_modal.is_qr_code_visible(), "QR code not visible in receive modal"

@@ -2,6 +2,14 @@ from ..base_locators import BaseLocators
 
 
 class ChatLocators(BaseLocators):
+    """Locators for 1x1/group chat list, composer, and chat actions.
+
+    QML sources:
+    - ui/imports/shared/status/StatusChatInput.qml
+    - ui/app/AppLayouts/Chat/views/ChatHeaderContentView.qml
+    - ui/imports/shared/views/chat/ChatContextMenuView.qml
+    """
+
     CHAT_LIST = BaseLocators.xpath("//*[contains(@resource-id,'ContactsColumnView_chatList')]")
     CHAT_SEARCH_BOX = BaseLocators.content_desc_contains("tid:statusBaseInput")
     CHAT_HEADER = BaseLocators.content_desc_contains(
@@ -23,6 +31,23 @@ class ChatLocators(BaseLocators):
     COMMAND_BUTTON = BaseLocators.xpath(
         "//*[contains(@content-desc, '[tid:statusChatInputCommandButton]') or "
         "contains(@resource-id,'statusChatInputCommandButton')]"
+    )
+    CHAT_MORE_OPTIONS_BUTTON = BaseLocators.resource_id_contains("chatToolbarMoreOptionsButton")
+    CHAT_MORE_OPTIONS_MENU = BaseLocators.resource_id_contains("moreOptionsContextMenu")
+    # Use the 1:1 chat variant (clearHistoryMenuItem) — not the group variant
+    # (clearHistoryGroupMenuItem). resource_id ends with the objectName.
+    CLEAR_HISTORY_MENU_ITEM = BaseLocators.xpath(
+        "//*[contains(@resource-id,'clearHistoryMenuItem') "
+        "and not(contains(@resource-id,'GroupMenuItem'))]"
+    )
+    CLEAR_HISTORY_CONFIRM_BUTTON = BaseLocators.resource_id_contains(
+        "clearChatConfirmationDialogClearButton"
+    )
+    # QML objectName: "deleteOrLeaveMenuItem" -- renders as "Close Chat" for 1x1 chats
+    CLOSE_CHAT_MENU_ITEM = BaseLocators.resource_id_contains("deleteOrLeaveMenuItem")
+    # QML confirmButtonObjectName in deleteChatConfirmationDialogComponent
+    CLOSE_CHAT_CONFIRM_BUTTON = BaseLocators.resource_id_contains(
+        "deleteChatConfirmationDialogDeleteButton"
     )
     ADD_IMAGE_ACTION = BaseLocators.xpath(
         "//*[contains(@content-desc, '[tid:chatCommandMenu_addImage]') or "
