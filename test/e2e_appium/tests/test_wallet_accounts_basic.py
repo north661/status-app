@@ -34,28 +34,25 @@ class TestWalletAccountsBasic(StepMixin):
             self.device.logger.info(f"Context menu address: {context_menu_address}")
 
         async with self.step(self.device, "Open Receive modal and verify address match"):
-            # Re-select a specific account after context menu closes.
-            # The Receive footer button only renders when an individual
-            # account is selected (not the "All accounts" aggregate view).
-            # Use gesture tap for reliability since the account row may
-            # have clickable=false in the accessibility tree.
-            account_rows = panel.account_rows()
-            assert len(account_rows) > 0, "No account rows after context menu dismiss"
-            panel.gestures.element_tap(account_rows[0])
-
+            # After context menu dismiss the individual account view is
+            # still active — do NOT re-click the account row as that
+            # toggles back to the "All accounts" aggregate view which
+            # hides the Receive footer button.
+            #
+            # If the Receive button is not visible (e.g. view reverted),
+            # select the account again to restore it.
             fallback_receive = panel.locators.content_desc_contains(
                 "[tid:walletFooterReceiveButton]"
             )
             if not panel.is_element_visible(
-                panel.locators.FOOTER_RECEIVE, timeout=8
+                panel.locators.FOOTER_RECEIVE, timeout=5
             ) and not panel.is_element_visible(fallback_receive, timeout=2):
-                # Retry selection with a fresh element reference
-                self.device.logger.warning(
-                    "Receive button not visible; retrying account selection"
+                self.device.logger.info(
+                    "Receive button not visible; selecting account to restore"
                 )
                 account_rows = panel.account_rows()
                 if account_rows:
-                    panel.gestures.element_center_tap(account_rows[0])
+                    panel.gestures.element_tap(account_rows[0])
                 assert panel.is_element_visible(
                     panel.locators.FOOTER_RECEIVE, timeout=10
                 ) or panel.is_element_visible(
