@@ -32,8 +32,15 @@ python -m pytest -m smoke --env=local -v
 ```
 
 Device-dependent tests (onboarding, messaging, wallet, etc.) require either:
-- **Cloud credentials**: `LT_USERNAME` / `LT_ACCESS_KEY` env vars for LambdaTest, or `BROWSERSTACK_USERNAME` / `BROWSERSTACK_ACCESS_KEY` for BrowserStack.
-- **Local Appium server** at `localhost:4723` with an Android emulator and a Status APK (`LOCAL_APP_PATH` env var).
+- **BrowserStack** (default, `--env=browserstack`): `BROWSERSTACK_USERNAME` and `BROWSERSTACK_ACCESS_KEY` env vars are configured as secrets. Also needs `BROWSERSTACK_APP_ID` (e.g. `bs://...`) pointing to an uploaded APK.
+- **LambdaTest** (`--env=lambdatest`, used in CI): `LT_USERNAME` / `LT_ACCESS_KEY` env vars.
+- **Local Appium server** (`--env=local`): Appium at `localhost:4723` with an Android emulator and a Status APK (`LOCAL_APP_PATH` env var).
+
+To run device tests against BrowserStack, upload an APK first (via BrowserStack dashboard or API), then:
+```bash
+export BROWSERSTACK_APP_ID="bs://YOUR_APP_HASH"
+python -m pytest -m onboarding --env=browserstack -v
+```
 
 ### Linting
 
@@ -54,3 +61,5 @@ Note: the existing codebase has ~19 pre-existing ruff findings (unused imports/v
 - **Config fallback**: When cloud credentials are missing, the framework logs a warning and falls back to default config. Test collection and unit-like tests still work.
 - **Generated reports**: pytest auto-generates XML and HTML reports under `reports/`. These are gitignored.
 - **Node.js dependency**: `package.json` in `test/e2e_appium/` is only for the `scripts/commit_status_manager.js` GitHub commit status tool. Not needed for running tests.
+- **BrowserStack validation**: `EnvironmentConfig.validate()` for BrowserStack checks for `BROWSERSTACK_APP_ID`. Without it, loading the config with validation will raise `ConfigurationError`. Set a placeholder (`bs://placeholder`) if you only need config/plan API access without launching a session.
+- **Standalone scripts**: To import framework modules outside pytest (e.g. in a standalone script), use `sys.path.insert(0, '.')` and import from `core.config_manager` / `core.providers` directly. Do not import from `config` top-level due to the circular import issue.
