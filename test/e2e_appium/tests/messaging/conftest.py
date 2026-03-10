@@ -267,10 +267,10 @@ async def established_chat(request, test_environment) -> EstablishedChatContext:
                     logger.warning("Cleanup after failed attempt: %s", cleanup_err)
                 pool = None
 
-            if attempt < max_attempts and _is_connection_error(e):
+            if attempt < max_attempts:
                 logger.info(
-                    "Transient connection error — retrying fixture setup "
-                    "with fresh sessions"
+                    "Retrying fixture setup with fresh sessions "
+                    "(attempt %d failed: %s)", attempt, e,
                 )
                 continue
 

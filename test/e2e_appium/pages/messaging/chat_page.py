@@ -98,8 +98,14 @@ class ChatPage(BasePage):
         timeout: int | None = 15,
     ) -> bool:
         self._ensure_chat_list_visible()
-        for locator in self._resolve_chat_locators(chat_identifier, display_name):
+        locators = self._resolve_chat_locators(chat_identifier, display_name)
+        for locator in locators:
             if self.is_element_visible(locator, timeout=timeout):
+                return self.safe_click(locator, timeout=timeout, max_attempts=3)
+        # Chat row may be below the fold — scroll and retry
+        self.logger.debug("Chat not visible; attempting scroll in chat list")
+        for locator in locators:
+            if self.scroll_to_element(locator, max_swipes=3, timeout=3):
                 return self.safe_click(locator, timeout=timeout, max_attempts=3)
         return False
 

@@ -85,6 +85,8 @@ class App(BasePage):
         if self.is_portrait_mode():
             # Wait for the drawer to close — nav items should disappear
             self.wait_for_invisibility(self.locators.LEFT_NAV_ANY, timeout=5)
+            # Allow destination page to begin rendering after drawer animation
+            time.sleep(0.5)
 
         return True
 

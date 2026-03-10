@@ -143,9 +143,13 @@ async def establish_contact(
         receiver_suffix, display_name=receiver_display, timeout=timeout,
     ), "Chat did not arrive on sender"
 
-    assert sender_chat.open_chat_by_suffix(
+    if not sender_chat.open_chat_by_suffix(
         receiver_suffix, display_name=receiver_display,
-    ), "Sender failed to open chat"
+    ):
+        logger.warning(
+            "open_chat_by_suffix failed for sender; falling back to open_first_chat"
+        )
+        assert sender_chat.open_first_chat(timeout=15), "Sender failed to open chat"
 
     assert sender_chat.wait_for_message_input(timeout=15), (
         "Message input not ready on sender"

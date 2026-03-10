@@ -95,6 +95,10 @@ class WalletLeftPanel(BasePage):
     def open_receive_modal(self, timeout: int | None = 10) -> ReceiveModal | None:
         """Open the receive modal from wallet footer.
 
+        The Receive button is only rendered when a specific account is
+        selected (not the "All Accounts" aggregate view).  If the button
+        is not initially visible this method scrolls down before giving up.
+
         Returns:
             ReceiveModal if opened successfully, None otherwise.
         """
@@ -103,6 +107,18 @@ class WalletLeftPanel(BasePage):
         fallback = self.locators.content_desc_contains(
             "[tid:walletFooterReceiveButton]"
         )
+
+        # The Receive button may not be rendered if no specific account is
+        # selected, or it may be off-screen after a context menu interaction.
+        if not self.is_element_visible(self.locators.FOOTER_RECEIVE, timeout=3):
+            if not self.is_element_visible(fallback, timeout=1):
+                self.logger.debug(
+                    "Receive button not visible; scrolling to find it"
+                )
+                self.scroll_to_element(
+                    self.locators.FOOTER_RECEIVE, max_swipes=3, timeout=2,
+                )
+
         if not self.safe_click(
             self.locators.FOOTER_RECEIVE,
             fallback_locators=[fallback],

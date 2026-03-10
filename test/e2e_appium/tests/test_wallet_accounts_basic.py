@@ -34,8 +34,16 @@ class TestWalletAccountsBasic(StepMixin):
             self.device.logger.info(f"Context menu address: {context_menu_address}")
 
         async with self.step(self.device, "Open Receive modal and verify address match"):
-            # Re-select account after context menu closes (ensures receive button is enabled)
+            # Re-select account after context menu closes.
+            # The Receive footer button only renders when a specific
+            # account is selected, so click the first account row and
+            # wait for the footer to appear.
+            account_rows = panel.account_rows()
+            assert len(account_rows) > 0, "No account rows after context menu dismiss"
             panel.safe_click(panel.locators.ACCOUNT_ROW_ANY, timeout=5)
+            assert panel.is_element_visible(
+                panel.locators.FOOTER_SEND, timeout=10
+            ), "Wallet footer not visible after re-selecting account"
 
             receive_modal = panel.open_receive_modal()
             assert receive_modal is not None, "Failed to open receive modal"
