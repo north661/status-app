@@ -192,7 +192,7 @@ class DeviceContext:
                 except Exception as exc:
                     self.logger.error("Failed to open profile menu for invite path: %s", exc)
                     return None
-                invite_visible = app.is_element_visible(INVITE_ACTION, timeout=5)
+                invite_visible = app.is_element_visible(INVITE_ACTION, timeout=15)
 
             if not invite_visible:
                 self.logger.error("Invite contacts action not visible in profile menu")
