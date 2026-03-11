@@ -106,6 +106,16 @@ class ChatLocators(BaseLocators):
         )
         return BaseLocators.xpath(xpath)
 
+    @staticmethod
+    def message_content_desc_any(content: str) -> tuple:
+        """Match any element whose content-desc contains the message text.
+
+        Broader fallback for devices where the sent message renders as
+        a different element type than ``EditText``.
+        """
+        escaped = content.replace('"', '\\"')
+        return BaseLocators.xpath(f"//*[contains(@content-desc,\"{escaped}\")]")
+
     # Reply mode indicator - when replying, there's a reply preview bar
     # QML: StatusChatInputReplyArea has objectName "statusChatInputReplyArea"
     # and Accessible.name "Replying to {userName}"

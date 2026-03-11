@@ -141,12 +141,18 @@ class ChatPage(BasePage):
     def send_message(self, message: str, timeout: int | None = None) -> bool:
         self.dismiss_introduce_prompt(timeout=2)
         payload = f"{message}\n"
-        return self.qt_safe_input(
+        result = self.qt_safe_input(
             self.locators.MESSAGE_INPUT,
             payload,
             verify=False,
             timeout=timeout,
         )
+        if result:
+            # Brief wait for Qt a11y tree to reflect the sent message.
+            # The message bubble renders asynchronously after input clears.
+            import time
+            time.sleep(1)
+        return result
 
     def submit_message_edit(self, updated_text: str, timeout: int = 10) -> bool:
         """Replace current edit text and submit the edited message."""
@@ -160,6 +166,7 @@ class ChatPage(BasePage):
         locators = (
             self.locators.message_text_exact(content),
             self.locators.message_text(content),
+            self.locators.message_content_desc_any(content),
         )
 
         def _found_message() -> bool:
