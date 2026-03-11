@@ -356,32 +356,27 @@ class TestMessageContextMenu:
     @pytest.mark.smoke
     async def test_verify_reaction_on_message(self) -> None:
         """Verify that a reaction appears on the message and syncs to both devices.
-        
+
         Desktop parity: test_messaging_1x1_chat.py verifies reaction emoji
         code appears on the message.
-        
+
         Multi-device: Verifies reaction is visible on both primary and secondary.
-        
-        Uses the setup message from fixture (already confirmed visible on both devices)
-        to avoid sync timing issues.
-        
-        Requires QML: StatusMessageEmojiReactions with objectName "statusMessageEmojiReactions"
-        and reaction buttons with objectName "messageReaction_{emoji}" and Accessible.name "{emoji}".
+
+        Sends a fresh message before reacting to ensure the chat view has
+        finished scrolling.  The QML ``onPressAndHold`` handler silently
+        ignores long-press gestures while ``chatLogView.moving`` is true
+        (MessageView.qml), so a settling period after navigation is
+        required.
         """
-        # Use the setup message that was sent during fixture - already synced to both devices
-        setup_message = f"Setup message from {self.ctx.secondary_suffix}"
+        test_message = _unique_message("reaction_sync")
         context_menu = MessageContextMenuPage(self.driver)
         emoji_code = "1f600"  # 😀 grin
 
-        async with self.step("Ensure primary is in chat"):
-            chat_page = await self._ensure_in_chat()
-            # Verify the setup message is visible (it should be, from fixture)
-            assert chat_page.message_exists(setup_message, timeout=self.UI_TIMEOUT), (
-                f"Primary: Setup message '{setup_message}' should be visible"
-            )
+        async with self.step("Send test message"):
+            await self._send_test_message(test_message)
 
         async with self.step("Add reaction via context menu"):
-            assert context_menu.long_press_message(setup_message), (
+            assert context_menu.long_press_message(test_message), (
                 "Failed to open context menu"
             )
             assert context_menu.tap_grin(), "Failed to add grin reaction"
@@ -392,14 +387,13 @@ class TestMessageContextMenu:
             )
 
         async with self.step("Verify reaction appears on primary device"):
+            chat_page = ChatPage(self.driver)
             assert chat_page.message_has_reaction(emoji_code, timeout=self.UI_TIMEOUT), (
                 f"Primary: Reaction {emoji_code} should appear on message after adding"
             )
 
         async with self.step("Verify reaction appears on secondary device"):
-            # Ensure secondary is in the chat
             secondary_chat = await self._ensure_secondary_in_chat()
-            # Setup message is already confirmed visible on secondary (from fixture)
             assert secondary_chat.message_has_reaction(emoji_code, timeout=self.UI_TIMEOUT), (
                 f"Secondary: Reaction {emoji_code} should appear on message (sync)"
             )
