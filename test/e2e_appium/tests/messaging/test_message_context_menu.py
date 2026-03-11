@@ -109,12 +109,14 @@ class TestMessageContextMenu:
     async def _send_test_message(self, message: str) -> ChatPage:
         """Send a test message and verify it appears."""
         chat_page = await self._ensure_in_chat()
-        
+
         assert chat_page.send_message(message), f"Failed to send message: {message}"
-        assert chat_page.message_exists(message, timeout=self.UI_TIMEOUT), (
-            f"Message not visible after sending: {message}"
-        )
-        
+        if not chat_page.message_exists(message, timeout=self.UI_TIMEOUT):
+            # Capture diagnostics before failing
+            chat_page.dump_page_source(f"msg_not_visible_{message[:20]}")
+            chat_page.take_screenshot(f"msg_not_visible_{message[:20]}")
+            raise AssertionError(f"Message not visible after sending: {message}")
+
         return chat_page
 
     async def _ensure_secondary_in_chat(self) -> ChatPage:
