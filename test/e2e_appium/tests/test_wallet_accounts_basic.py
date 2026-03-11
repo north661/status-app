@@ -34,13 +34,10 @@ class TestWalletAccountsBasic(StepMixin):
             self.device.logger.info(f"Context menu address: {context_menu_address}")
 
         async with self.step(self.device, "Open Receive modal and verify address match"):
-            # After context menu dismiss the individual account view is
-            # still active — do NOT re-click the account row as that
-            # toggles back to the "All accounts" aggregate view which
-            # hides the Receive footer button.
-            #
-            # If the Receive button is not visible (e.g. view reverted),
-            # select the account again to restore it.
+            # After context menu dismiss the view may revert to "All
+            # accounts" which hides the Receive footer button (QML:
+            # visible: !walletStore.showAllAccounts).  If the Receive
+            # button is not visible, re-select the account.
             fallback_receive = panel.locators.content_desc_contains(
                 "[tid:walletFooterReceiveButton]"
             )
@@ -50,9 +47,26 @@ class TestWalletAccountsBasic(StepMixin):
                 self.device.logger.info(
                     "Receive button not visible; selecting account to restore"
                 )
+                # Click the account row using multiple strategies since
+                # the Qt accessibility tree may report clickable=false.
                 account_rows = panel.account_rows()
+                clicked = False
                 if account_rows:
-                    panel.gestures.element_tap(account_rows[0])
+                    el = account_rows[0]
+                    # Strategy 1: center-coordinate tap (most reliable)
+                    clicked = panel.gestures.element_center_tap(el)
+                    if not clicked:
+                        # Strategy 2: Appium element tap
+                        clicked = panel.gestures.element_tap(el)
+                if not clicked:
+                    # Strategy 3: use safe_click locator
+                    try:
+                        panel.safe_click(
+                            panel.locators.ACCOUNT_ROW_ANY, timeout=5,
+                        )
+                        clicked = True
+                    except Exception:
+                        pass
                 assert panel.is_element_visible(
                     panel.locators.FOOTER_RECEIVE, timeout=10
                 ) or panel.is_element_visible(
