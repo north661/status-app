@@ -124,88 +124,46 @@ class DeviceContext:
 
         On Android mobile the "Copy link to profile" action
         (``userStatusCopyLinkAction``) is permanently disabled in QML
-        (``enabled: !SQUtils.Utils.isMobile``).  This method opens the
-        profile popup and taps the mobile-only "Invite contacts" action
-        to reach the ShareProfileDialog which contains the link.
+        (``enabled: !SQUtils.Utils.isMobile``).  We still attempt it
+        briefly (1 attempt, 2s timeout) because the profile popup needs
+        those Appium driver interactions to render in the accessibility
+        tree.  Then we fall back to the mobile "Invite contacts" path.
 
         Returns the captured link if successful, otherwise None.
         """
         from pages.app import App
-        from pages.settings.share_profile_dialog import ShareProfileDialog
+        from utils.exceptions import ElementInteractionError
         self.logger.info("Capturing profile link for device %s", self.device_id)
 
         main_app = App(self.driver)
 
-        # Open the profile popup via the nav-bar profile button.
-        # Use the App.open_profile_menu() method which handles
-        # _ensure_main_nav_visible() correctly for both landscape and
-        # portrait modes.
-        if not main_app.open_profile_menu():
-            self.logger.error("Failed to open profile menu")
-            return None
-
-        # Wait for the profile popup to fully render.  The popup opens
-        # asynchronously after the profile button click.  The profile
-        # header (onlineIdentifierProfileHeader) is the first element
-        # in the popup and confirms it has rendered.
-        PROFILE_HEADER = (
-            "xpath",
-            "//*[contains(@resource-id,'onlineIdentifierProfileHeader')]",
-        )
-        if not main_app.is_element_visible(PROFILE_HEADER, timeout=10):
-            self.logger.warning("Profile popup header not visible; popup may not have opened")
-
-        # On mobile Android, "Invite contacts" (userStatusShareProfileAction)
-        # is the enabled action.  Skip the desktop-only "Copy link to
-        # profile" (userStatusCopyLinkAction, disabled on mobile) to
-        # avoid wasting ~20s per device.
-        INVITE_ACTION = (
-            "xpath",
-            "//*[contains(@resource-id,'userStatusShareProfileAction')]",
-        )
-        if not main_app.is_element_visible(INVITE_ACTION, timeout=10):
-            self.logger.error("Invite contacts action not visible in profile menu")
-            main_app.dump_page_source("invite_action_not_visible")
-            # Dismiss the profile popup before returning
-            try:
-                self.driver.back()
-            except Exception:
-                pass
-            return None
-
+        # Try the quick clipboard copy — this also opens the profile
+        # popup.  On mobile the copy action is disabled, so this fails
+        # fast.  The important side effect is that the popup renders
+        # during the brief interaction attempt.
+        profile_link = None
         try:
-            main_app.safe_click(INVITE_ACTION, timeout=5)
-        except Exception as exc:
-            self.logger.error("Failed to click Invite contacts: %s", exc)
-            try:
-                self.driver.back()
-            except Exception:
-                pass
-            return None
+            profile_link = main_app.copy_profile_link_from_menu(timeout=2)
+        except (ElementInteractionError, Exception) as exc:
+            self.logger.debug("Profile menu copy not available (expected on mobile): %s", exc)
 
-        dialog = ShareProfileDialog(self.driver)
-        if not dialog.is_displayed(timeout=10):
-            self.logger.error("ShareProfileDialog did not appear after invite tap")
-            try:
-                self.driver.back()
-            except Exception:
-                pass
-            return None
+        if profile_link:
+            self.logger.info("Profile link captured via clipboard: %s", profile_link)
+            self.set_state("profile_link", profile_link)
+            if self.user:
+                self.user.profile_link = profile_link
+            return profile_link
 
-        profile_link = dialog.get_profile_link()
+        # The profile popup should still be open from the copy attempt.
+        # Use the mobile-only "Invite contacts" path.
+        self.logger.info("Using Invite contacts path for profile link")
+        profile_link = self._capture_via_settings(main_app)
 
-        # Dismiss: ShareProfileDialog + profile popup = 2 overlays
-        for _ in range(2):
-            try:
-                self.driver.back()
-            except Exception:
-                pass
-
-        # Re-activate app in case driver.back() exited it on BrowserStack
+        # Re-activate app after overlay dismissal
         main_app.app_lifecycle.activate_app()
 
         if not profile_link:
-            self.logger.error("ShareProfileDialog did not contain a profile link")
+            self.logger.error("All profile-link capture paths failed")
             return None
 
         self.logger.info("Profile link captured: %s", profile_link)
