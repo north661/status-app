@@ -144,6 +144,17 @@ class DeviceContext:
             self.logger.error("Failed to open profile menu")
             return None
 
+        # Wait for the profile popup to fully render.  The popup opens
+        # asynchronously after the profile button click.  The profile
+        # header (onlineIdentifierProfileHeader) is the first element
+        # in the popup and confirms it has rendered.
+        PROFILE_HEADER = (
+            "xpath",
+            "//*[contains(@resource-id,'onlineIdentifierProfileHeader')]",
+        )
+        if not main_app.is_element_visible(PROFILE_HEADER, timeout=10):
+            self.logger.warning("Profile popup header not visible; popup may not have opened")
+
         # On mobile Android, "Invite contacts" (userStatusShareProfileAction)
         # is the enabled action.  Skip the desktop-only "Copy link to
         # profile" (userStatusCopyLinkAction, disabled on mobile) to
