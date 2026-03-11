@@ -122,43 +122,34 @@ class DeviceContext:
     def capture_profile_link(self) -> str | None:
         """Capture the user's profile link.
 
-        Tries the quick profile-menu copy action first. If that fails (e.g.
-        on mobile where the action is disabled), falls back to the
-        Settings → Profile → Share Profile dialog path.
+        On Android mobile the "Copy link to profile" action
+        (``userStatusCopyLinkAction``) is permanently disabled in QML
+        (``enabled: !SQUtils.Utils.isMobile``).  This method goes
+        directly to the mobile-appropriate "Invite contacts" path which
+        opens the ShareProfileDialog to read the link.
 
-        The fallback path dismisses overlays via ``driver.back()`` which may
+        The path dismisses overlays via ``driver.back()`` which may
         exit the app on BrowserStack.  This method re-activates the app
         before returning so callers always get a usable navigation state.
 
         Returns the captured link if successful, otherwise None.
         """
         from pages.app import App
-        from utils.exceptions import ElementInteractionError
         self.logger.info("Capturing profile link for device %s", self.device_id)
 
         main_app = App(self.driver)
-        used_settings_fallback = False
-        profile_link = None
-        try:
-            profile_link = main_app.copy_profile_link_from_menu()
-        except (ElementInteractionError, Exception) as exc:
-            self.logger.info("Profile menu copy failed (%s); will try settings path", exc)
+
+        # Go directly to the Invite contacts → ShareProfileDialog path.
+        # The desktop "Copy link to profile" action is disabled on mobile
+        # Android so attempting it first wastes ~20s per device.
+        profile_link = self._capture_via_settings(main_app)
+
+        # The overlay dismissal via driver.back() can exit the app on
+        # BrowserStack.  Re-activate to guarantee a usable nav state.
+        main_app.app_lifecycle.activate_app()
 
         if not profile_link:
-            self.logger.info(
-                "Profile menu copy unavailable; trying Settings → Profile → Share Profile"
-            )
-            profile_link = self._capture_via_settings(main_app)
-            used_settings_fallback = True
-
-        # The settings fallback dismisses overlays with driver.back() which
-        # can exit the app on BrowserStack.  Re-activate to guarantee the
-        # caller has a usable navigation state.
-        if used_settings_fallback:
-            main_app.app_lifecycle.activate_app()
-
-        if not profile_link:
-            self.logger.error("All profile-link capture paths failed")
+            self.logger.error("Profile link capture failed")
             return None
 
         self.logger.info("Profile link captured: %s", profile_link)

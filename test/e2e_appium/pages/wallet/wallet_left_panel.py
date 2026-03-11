@@ -206,6 +206,16 @@ class WalletLeftPanel(BasePage):
     def open_context_menu_for_row(self, index: int = -1) -> bool:
         if not self.long_press_row(index=index):
             return False
+        if self.is_element_visible(self.locators.ACCOUNT_CONTEXT_MENU, timeout=5):
+            return True
+        # Qt maps context menus to right-click; Appium long-press doesn't
+        # always translate reliably.  Retry with a longer hold duration.
+        self.logger.debug(
+            "Context menu not visible after first long-press; "
+            "retrying with longer duration"
+        )
+        if not self.long_press_row(index=index, duration_ms=1500):
+            return False
         return self.is_element_visible(self.locators.ACCOUNT_CONTEXT_MENU, timeout=5)
 
     def edit_account_via_menu(self, new_name: str, index: int = -1) -> bool:

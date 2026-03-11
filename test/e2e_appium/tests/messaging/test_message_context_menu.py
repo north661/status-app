@@ -28,6 +28,7 @@ def _unique_message(prefix: str = "test") -> str:
 
 @pytest.mark.messaging
 @pytest.mark.device_count(2)
+@pytest.mark.timeout(1200)
 class TestMessageContextMenu:
     """Tests for message context menu interactions.
     
