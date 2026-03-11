@@ -19,6 +19,7 @@ class SettingsLocators(BaseLocators):
     PASSWORD_MENU_ITEM_TEXT = BaseLocators.text_contains("Password")
     MESSAGING_MENU_ITEM = BaseLocators.content_desc_contains("[tid:4-MenuItem]")
     CONTACTS_MENU_ITEM = BaseLocators.content_desc_contains("[tid:2-MenuItem]")
+    PRIVACY_MENU_ITEM = BaseLocators.text_contains("Privacy")
 
     SIGN_OUT_AND_QUIT = BaseLocators.text_contains("Sign out & Quit")
     SIGN_OUT_AND_QUIT_ALT = BaseLocators.xpath(
