@@ -196,6 +196,7 @@ class DeviceContext:
 
             if not invite_visible:
                 self.logger.error("Invite contacts action not visible in profile menu")
+                app.dump_page_source("invite_action_not_visible")
                 return None
 
             try:
