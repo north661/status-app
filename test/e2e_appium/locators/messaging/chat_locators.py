@@ -18,9 +18,7 @@ class ChatLocators(BaseLocators):
     TOOLBAR_BACK_BUTTON = BaseLocators.xpath(
         "//android.widget.Button[@content-desc=' [tid:toolBarBackButton]']"
     )
-    MESSAGE_INPUT = BaseLocators.xpath(
-        "//*[contains(@resource-id,'messageInputField') or contains(@content-desc,'Message')]"
-    )
+    MESSAGE_INPUT = BaseLocators.resource_id_contains("messageInputField")
     SEND_BUTTON = BaseLocators.xpath(
         "//*[contains(@resource-id,'statusChatInputSendButton')]"
     )
