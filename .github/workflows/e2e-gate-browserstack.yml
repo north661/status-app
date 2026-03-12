@@ -13,9 +13,13 @@ on:
         type: string
         required: true
       marker:
-        description: 'Pytest marker to run'
+        description: 'Pytest marker (gate, smoke, messaging, wallet, etc.)'
         type: string
         default: 'gate'
+      pytest_args:
+        description: 'Custom pytest args (overrides marker if set). Example: tests/test_wallet_accounts_basic.py::TestWalletAccountsBasic::test_add_and_delete_generated_account'
+        type: string
+        default: ''
       parallel:
         description: 'Number of parallel workers (0 = sequential)'
         type: string
@@ -45,14 +49,21 @@ jobs:
         working-directory: test/e2e_appium
         run: pip install -r requirements.txt
 
-      - name: Run gate tests
+      - name: Run tests
         working-directory: test/e2e_appium
         env:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           BROWSERSTACK_APP_ID: ${{ inputs.app_id }}
         run: |
-          PYTEST_CMD="python -m pytest -m ${{ inputs.marker }} --env=browserstack -v"
+          # Use custom pytest_args if provided, otherwise use marker
+          CUSTOM_ARGS="${{ inputs.pytest_args }}"
+          if [ -n "$CUSTOM_ARGS" ]; then
+            PYTEST_CMD="python -m pytest $CUSTOM_ARGS --env=browserstack -v"
+          else
+            PYTEST_CMD="python -m pytest -m ${{ inputs.marker }} --env=browserstack -v"
+          fi
+
           PYTEST_CMD="$PYTEST_CMD --timeout=1200"
           PYTEST_CMD="$PYTEST_CMD --html=reports/gate-results.html --self-contained-html"
           PYTEST_CMD="$PYTEST_CMD --junitxml=reports/gate-junit.xml"
@@ -74,7 +85,11 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Marker** | \`${{ inputs.marker }}\` |" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ inputs.pytest_args }}" ]; then
+            echo "| **Args** | \`${{ inputs.pytest_args }}\` |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| **Marker** | \`${{ inputs.marker }}\` |" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "| **App ID** | \`${{ inputs.app_id }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Parallel** | ${{ inputs.parallel }} |" >> $GITHUB_STEP_SUMMARY
