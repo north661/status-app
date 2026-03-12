@@ -1,0 +1,126 @@
+---
+globs: specs/**/*.md
+---
+
+# Spec Creation Guide for AI
+
+Instructions for generating feature specs from various inputs.
+
+## Generating from a FURPS document
+
+1. Extract functional requirements and convert each to one or more scenarios
+2. Convert performance/reliability numbers into Requirements section entries using RFC 2119
+3. Map security considerations to edge cases
+4. Flag any vague language (see spec-quality.mdc) and request clarification or propose specific thresholds
+
+## Generating from an epic or issue
+
+1. Read the issue description and acceptance criteria
+2. Create one scenario per acceptance criterion
+3. Infer edge cases from the description (error states, boundary values, permission checks)
+4. Set `refs.epic` to the issue URL
+5. Check existing specs in the same area for overlapping scenarios
+
+## Generating from Figma designs
+
+1. Identify each distinct screen state (empty, loading, populated, error)
+2. Create scenarios for each user action visible in the design
+3. Note platform-specific layouts for the Platform Differences table
+4. Set `refs.figma` to the Figma URL
+5. Flag any interactions that are ambiguous in the design
+
+## Generating from existing test code
+
+1. Read the test file and extract each test function
+2. Map `with step(...)` blocks or function names to scenario actions
+3. Map assertions to Expected outcomes
+4. Map `@pytest.mark.case(...)` IDs for reference
+5. Map `@pytest.mark.parametrize(...)` parameters to scenario variants
+6. Note any skipped tests (`@pytest.mark.skip`) and check if the scenario is still valid
+
+## Generating from QML UI code
+
+QML files are the richest non-test source for specs. Key files to look for:
+
+- `ui/app/AppLayouts/{Area}/popups/` — creation/edit flows, validation rules, wizard steps
+- `ui/app/AppLayouts/{Area}/views/` — main views, context menus, role-based visibility
+- `ui/app/AppLayouts/{Area}/panels/` — component behaviour
+- `ui/app/AppLayouts/stores/` — store methods showing available actions
+- `ui/imports/utils/Constants.qml` — shared validation regexes, limits, error messages
+- `ui/imports/shared/views/` — shared components like context menus
+
+What to extract:
+
+1. **Signals** — each signal is a user action (e.g., `signal createCommunityChannel(...)`)
+2. **Validators** — `StatusMinLengthValidator`, `StatusRegularExpressionValidator`, `maximumLength`
+   properties give you exact constraints for Requirements
+3. **Enabled/visible conditions** — `enabled: root.isCommunityChat && root.amIChatAdmin` tells you
+   role-based access rules
+4. **Enums and states** — `CurrentPage` enums show flow steps; state properties show UI states
+5. **qsTr() strings** — user-facing text, error messages, labels
+6. **Readonly properties** — constants like `maxChannelNameLength: 24` are direct requirements
+
+## Generating from Nim backend code
+
+Nim code provides the action/event model and business logic. Key files:
+
+- `src/app/modules/main/{area}/io_interface.nim` — complete method catalogue of user actions
+  and system events. Every method maps to at least one scenario.
+- `src/app/modules/main/{area}/module.nim` — business logic, validation, state transitions.
+  Look for explicit checks (e.g., `if not self.joiningCommunityDetails.allSigned()`) as these
+  are preconditions and error cases.
+- `src/app/modules/main/{area}/controller.nim` — event wiring and service delegation
+- `src/app/modules/shared_models/section_item.nim` — state flags (`isMember`, `isBanned`,
+  `canJoin`, `canManageUsers`) that map directly to scenario preconditions
+- `src/app_service/service/{area}/service.nim` — service signals (`SIGNAL_COMMUNITY_JOINED`,
+  `SIGNAL_COMMUNITY_ACCESS_FAILED`) that map to expected outcomes
+
+What to extract:
+
+1. **Method names** — `createCommunity`, `cancelRequestToJoinCommunity` → scenario actions
+2. **Success/failure pairs** — `communityAccessRequested` / `communityAccessFailed` →
+   happy path + error scenarios
+3. **State enums** — `RequestToJoinState.InProgress` → verifiable intermediate states
+4. **Validation logic** — explicit checks in module methods → preconditions and edge cases
+5. **Parameter signatures** — method parameters show what data each action requires
+
+## Generating from status-go (Go backend)
+
+For features with backend-heavy logic (permissions, encryption, token gating), the Go code
+in `vendor/status-go/` or the [status-go repository](https://github.com/status-im/status-go)
+contains the deepest implementation details. Key areas:
+
+- `protocol/communities/` — community logic, permission enforcement, roles
+- `protocol/protobuf/communities.proto` — data model (also documented in FURPS Annex A)
+
+Use status-go when QML + Nim don't reveal the rules (e.g., what exactly determines whether
+a token permission is satisfied, how encryption keys are distributed to channel members).
+
+## Combining sources for best results
+
+For the most complete spec, combine sources in this order:
+
+1. **QML** — UI contract: what actions exist, validation rules, role visibility, flow structure
+2. **Nim io_interface + module** — action/event model, business logic, state transitions
+3. **status-go** (if needed) — permission rules, protocol behaviour, encryption
+4. **FURPS doc** (if exists) — performance thresholds, reliability requirements
+5. **Test code** (if exists) — verified scenarios with assertions
+
+AI should flag any contradictions between layers (e.g., QML allows 24-char names but backend
+rejects at 20) as these are potential bugs worth noting in Regression Notes.
+
+## Writing style
+
+- Action field: describe user intent ("Create a channel named X") not UI mechanics ("Click the + button, then fill in the name field, then click Create")
+- Expected field: state observable outcomes ("Channel X appears in the list") not implementation details ("Database record is created")
+- Preconditions: be explicit about every assumption. Never rely on implicit state from previous scenarios — each scenario MUST be independently understandable
+- Keep scenarios atomic: one logical action per scenario. If a test covers create-edit-delete, split into three scenarios
+
+## After generating
+
+1. Verify all frontmatter fields are populated
+2. Verify the `code` field is unique (search existing specs)
+3. Verify scenario IDs are sequential and use the correct code prefix
+4. Run the quality checklist from guide.md
+5. Update coverage.md to reflect the new spec
+6. Update SUMMARY.md to add the spec to navigation
