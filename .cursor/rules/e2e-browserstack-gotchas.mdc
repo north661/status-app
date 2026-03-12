@@ -1,0 +1,94 @@
+# E2E BrowserStack & QML Interaction Gotchas
+
+## QML → Android Accessibility Tree
+
+### Always Check QML Source Before Writing Locators
+
+The QML source (`ui/`) is the ground truth for element behavior. The Android accessibility tree is a lossy projection. Key patterns:
+
+- **`enabled: !SQUtils.Utils.isMobile`** — Some QML actions exist in the popup but are disabled on mobile Android (e.g. `userStatusCopyLinkAction` "Copy link to profile"). Always verify `enabled` conditions in QML before targeting an element.
+- **`visible:` bindings** — QML elements with `visible: someCondition` won't appear in the a11y tree at all when hidden. Check what drives the condition (e.g. `walletFooterReceiveButton` is `visible: !walletStore.showAllAccounts`).
+
+### `clickable="false"` Doesn't Mean Unclickable
+
+Qt `StatusListItem` elements often report `clickable="false"` in the Android a11y tree even though they handle clicks via internal `MouseArea` or `onClicked` handlers. Appium's `element.click()` will report success but the Qt event may not be delivered.
+
+**Workarounds:**
+- Use `gestures.element_center_tap(element)` which taps at coordinates
+- Use `mobile: longClickGesture` for context menus instead of element clicks
+- Verify the click had the expected effect (check for UI state change, not just click success)
+
+### `chatLogView.moving` Silently Blocks Long-Press
+
+`MessageView.qml` line 902:
+```qml
+onPressAndHold: function (mouse) {
+    if (mouse.wasHeld && !root.chatLogView.moving)
+        root.openMessageContextMenu(mouse.x, mouse.y)
+}
+```
+
+After navigating to a chat, the scroll-to-bottom animation keeps `moving=true` for 1-2 seconds. Any long-press during this time is **silently ignored** — no error, no feedback.
+
+**Pattern:** Always send a fresh message (which includes a 1s post-send wait) before long-pressing on a message. This gives the chat view time to settle.
+
+### Profile Popup Needs Driver Interaction to Render
+
+The profile popup (opened by clicking `statusProfileNavBarTabButton`) renders asynchronously in the a11y tree. Simply clicking the button and immediately searching for popup content will fail.
+
+**Pattern:** Call `copy_profile_link_from_menu(timeout=2)` which attempts to interact with the popup elements. Even though the desktop copy action fails on mobile, the Appium element polling triggers the Qt accessibility tree to update, making the popup content discoverable.
+
+## Locator Pitfalls
+
+### Never Use Broad `content-desc` Contains
+
+```python
+# BAD — matches "Messaging" settings item, "Message" labels, etc.
+MESSAGE_INPUT = xpath("//*[contains(@content-desc,'Message')]")
+
+# GOOD — matches only the QML objectName
+MESSAGE_INPUT = resource_id_contains("messageInputField")
+```
+
+`content-desc` on Android maps to `Accessible.name` in QML which often contains display text. `resource-id` maps to `objectName` which is stable and unique.
+
+### Locator Priority
+1. `resource_id_contains("objectName")` — always preferred, maps to QML `objectName`
+2. `content_desc_contains("[tid:objectName]")` — for elements using `Accessible.name: Utils.formatAccessibleName("", objectName)`
+3. `xpath` compound conditions — only when both resource-id and content-desc are needed
+
+## BrowserStack-Specific
+
+### `driver.back()` Can Exit the App
+
+On BrowserStack Android devices, `driver.back()` is the system back button. If there's no overlay/dialog to dismiss, it navigates back — potentially exiting the app entirely.
+
+**Pattern:** Always call `app_lifecycle.activate_app()` after `driver.back()` presses to guarantee the app is in the foreground.
+
+### Device Variability
+
+Tests run on `Samsung Galaxy Tab.*` with Android 12-16. Different devices have different:
+- Screen sizes (affects portrait vs landscape, element positions)
+- Performance (affects animation timing, element render speed)
+- Touch gesture handling (some devices need longer long-press duration)
+
+**Pattern:** Use the dual long-press strategy: try W3C pointer actions first, fall back to `mobile: longClickGesture` with a longer duration.
+
+### Session Instability
+
+BrowserStack sessions can die mid-test ("WebDriver session appears to be dead"). The messaging test fixture retries on ALL failures (not just connection errors) with fresh sessions.
+
+## Test Patterns That Work
+
+### Messaging Tests
+- Module-scoped `established_chat` fixture — onboard 2 users + establish contact once, share across all tests in the module
+- Each test sends its own fresh message before interacting (avoids `chatLogView.moving` issues)
+- `@pytest.mark.timeout(1200)` for 20-minute budget (accommodates fixture retry)
+- `@pytest.mark.flaky(reruns=1)` for CI resilience
+
+### Single-Device Tests
+- Use `StepMixin` base class with `async with self.step(device, "description")`
+- Settings navigation: use retry pattern (`if not settings.is_loaded(timeout=20): retry`)
+- Wallet: account row `clickable=false` means avoid click-to-select patterns; use context menu via long-press instead
+
+Consider these rules when working on `test/e2e_appium/` files.
