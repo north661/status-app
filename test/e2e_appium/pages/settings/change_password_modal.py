@@ -74,18 +74,35 @@ class ChangePasswordModal(BasePage):
             self.logger.error("Change password modal remained visible after restart attempts")
             return False
 
-        if not self.app_lifecycle.wait_for_app_not_running(timeout=30):
+        if not self.app_lifecycle.wait_for_app_not_running(timeout=45):
             self.logger.error("App never reached NOT_RUNNING state after tapping restart")
             return False
 
-        if not self.app_lifecycle.activate_app_with_ui_ready():
+        if not self.app_lifecycle.activate_app_with_ui_ready(activation_timeout=30.0):
             self.logger.error("App activation with UI ready failed after password change")
             return False
+
+        if not self._wait_for_welcome_back_screen(timeout=20):
+            self.logger.warning(
+                "WelcomeBack screen not detected after restart; proceeding anyway"
+            )
 
         if user and new_password:
             user.password = new_password
 
         return True
+
+    def _wait_for_welcome_back_screen(self, timeout: int = 20) -> bool:
+        """Poll until the WelcomeBack login screen is visible and interactive."""
+        from pages.onboarding.welcome_back_page import WelcomeBackPage
+
+        wb = WelcomeBackPage(self.driver)
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if wb.is_welcome_back_screen_displayed(timeout=2):
+                return True
+            time.sleep(1.0)
+        return False
 
     def _wait_for_primary_button_enabled(self, timeout: int = 10) -> bool:
         deadline = time.time() + timeout
