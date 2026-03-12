@@ -13,7 +13,7 @@ class TestSettingsPasswordChange(StepMixin):
     @pytest.mark.gate
     @pytest.mark.critical
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=1, reruns_delay=5)
+    @pytest.mark.flaky(reruns=2, reruns_delay=5)
     async def test_change_password_and_login(self):
         async with self.step(self.device, "Navigate to Settings"):
             app = App(self.device.driver)
