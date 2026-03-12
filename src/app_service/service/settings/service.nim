@@ -1146,11 +1146,15 @@ QtObject:
   proc thirdpartyServicesEnabledChanged*(self: Service) {.signal.}
 
   proc getThirdpartyServicesEnabled*(self: Service): bool {.slot.} =
+    if self.initialized:
+      return self.settings.thirdpartyServicesEnabled
+
     try:
       let response = status_settings.thirdpartyServicesEnabled()
       if not response.error.isNil:
         raise newException(RpcException, response.error.message)
-      return response.result.getBool
+      result = response.result.getBool
+      self.settings.thirdpartyServicesEnabled = result
     except Exception as e:
       let errDesription = e.msg
       error "reading thirdpartyServicesEnabled setting error: ", errDesription
