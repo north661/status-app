@@ -1,4 +1,5 @@
 import base64
+import time
 
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -144,25 +145,80 @@ class WalletLeftPanel(BasePage):
             self.logger.error("Failed to open add account modal")
             return False
         if not modal.set_name(name):
-            self.logger.error(f"Failed to set account name to '{name}'")
+            self.logger.error("Failed to set account name to '%s'", name)
             return False
         modal.save_changes()
 
+        return self._wait_for_add_account_result(modal, auth_password)
+
+    def _wait_for_add_account_result(
+        self,
+        modal: AddEditAccountModal,
+        auth_password: str | None,
+        timeout: int = 90,
+    ) -> bool:
+        """Poll until the add-account operation completes.
+
+        After clicking save the app may perform CPU-heavy key derivation
+        that blocks the Android accessibility tree for up to ~60 s on slow
+        BrowserStack devices.  Each find_element call can take ~20 s to
+        return a 500 error during this period, so short nominal timeouts
+        are meaningless.  This method uses a generous deadline and short
+        per-probe timeouts so it reacts quickly once the tree is available.
+
+        IMPORTANT: "modal not found" does NOT mean "modal dismissed".
+        During recovery the accessibility tree returns garbage (dicts
+        instead of WebElements, empty results).  We require *positive*
+        confirmation via the wallet panel's ADD_ACCOUNT_BUTTON before
+        concluding the modal is gone.
+        """
         auth_modal = KeycardAuthenticationModal(self.driver)
-        if not auth_modal.is_displayed(timeout=5):
-            if not modal.wait_until_hidden(timeout=5):
-                self.logger.error("Add account modal did not close and no authentication prompt appeared")
-                return False
-            return True
+        deadline = time.time() + timeout
 
-        if not auth_password:
-            self.logger.error("Authentication required but no password provided")
-            return False
-        if not auth_modal.authenticate(auth_password):
-            self.logger.error("Failed to authenticate when adding account")
-            return False
+        while time.time() < deadline:
+            # Outcome 1: auth prompt appeared → authenticate
+            try:
+                if auth_modal.is_displayed(timeout=2):
+                    self.logger.info("Authentication prompt detected after save")
+                    self._capture_post_keygen_diagnostics("add_account_auth_prompt")
+                    if not auth_password:
+                        self.logger.error("Authentication required but no password provided")
+                        return False
+                    return auth_modal.authenticate(auth_password)
+            except Exception:
+                pass
 
-        return True
+            # Outcome 2: modal truly dismissed — require positive proof
+            # that the wallet panel is back, not just "modal not found".
+            try:
+                if self._is_wallet_panel_visible():
+                    self.logger.info("Add-account modal dismissed; wallet panel visible")
+                    self._capture_post_keygen_diagnostics("add_account_dismissed")
+                    return True
+            except Exception:
+                pass
+
+            time.sleep(1.0)
+
+        self.logger.error("Add-account did not complete within %ss", timeout)
+        self.take_screenshot("add_account_timeout")
+        self.dump_page_source("add_account_timeout")
+        return False
+
+    def _is_wallet_panel_visible(self) -> bool:
+        """Quick check that the main wallet panel is back (no modal overlay)."""
+        return self.is_element_visible(self.locators.ADD_ACCOUNT_BUTTON, timeout=2)
+
+    def _capture_post_keygen_diagnostics(self, label: str) -> None:
+        """Capture screenshot + page source after key derivation completes.
+
+        Diagnostics taken *during* the blocking period fail silently
+        because the Appium driver uses the same blocked accessibility
+        tree.  Capturing immediately after the tree becomes responsive
+        gives us useful CI artifacts.
+        """
+        self.take_screenshot(label)
+        self.dump_page_source(label)
 
     def account_rows(self) -> list[WebElement]:
         try:

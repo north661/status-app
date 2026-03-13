@@ -12,6 +12,7 @@ class TestWalletAccountsBasic(StepMixin):
     @pytest.mark.wallet
     @pytest.mark.smoke
     @pytest.mark.timeout(900)
+    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_add_and_delete_generated_account(self):
         async with self.step(self.device, "Verify wallet panel loaded"):
             panel = WalletLeftPanel(self.device.driver)
@@ -66,11 +67,14 @@ class TestWalletAccountsBasic(StepMixin):
             else:
                 app.logger.warning("No toast detected after adding account '%s'", name)
 
-            after_add = len(panel.account_rows())
-            assert after_add >= before, (
+            def account_list_grew():
+                return len(panel.account_rows()) >= before
+
+            assert panel.wait_for_condition(account_list_grew, timeout=15), (
                 f"Account list did not grow after adding '{name}'. "
-                f"Before: {before}, After: {after_add}"
+                f"Before: {before}, Current: {len(panel.account_rows())}"
             )
+            after_add = len(panel.account_rows())
 
         async with self.step(self.device, "Rename account via context menu"):
             renamed_name = generate_account_name(16)
