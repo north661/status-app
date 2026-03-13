@@ -40,7 +40,7 @@ def validate_environment(environment: str) -> bool:
 def switch_environment(environment: str) -> bool:
     try:
         switcher = EnvironmentSwitcher()
-        config = switcher.switch_to(environment)
+        switcher.switch_to(environment)
         print(f"✅ Switched to environment: {environment}")
         print(f"Run: export CURRENT_TEST_ENVIRONMENT={environment}")
         return True
@@ -73,7 +73,7 @@ def main() -> None:
 
     subparsers.add_parser("auto-detect", help="Auto-detect best environment")
 
-    validate_all_parser = subparsers.add_parser(
+    subparsers.add_parser(
         "validate-all", help="Validate all environments"
     )
 

@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import time
 from datetime import datetime
@@ -328,7 +327,6 @@ def pytest_runtest_makereport(item, call):
         return
 
     import asyncio
-    from core.session_manager import SessionManager
     logger = get_logger("conftest")
 
     rep_setup = getattr(item, "rep_setup", None)

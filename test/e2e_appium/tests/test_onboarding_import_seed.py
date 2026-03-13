@@ -11,7 +11,6 @@ from pages.onboarding import (
     SplashScreen,
 )
 from pages.base_page import BasePage
-from pages.app import App
 from locators.app_locators import AppLocators
 from locators.onboarding.wallet.wallet_locators import WalletLocators
 from locators.onboarding.returning_login_locators import ReturningLoginLocators
@@ -76,7 +75,6 @@ class TestOnboardingImportSeed(StepMixin):
         async with self.step(self.device, "Verify wallet address"):
             wallet_locators = WalletLocators()
             base = BasePage(driver)
-            app = App(driver)
             app_locators = AppLocators()
 
             base.safe_click(app_locators.LEFT_NAV_WALLET, timeout=5)

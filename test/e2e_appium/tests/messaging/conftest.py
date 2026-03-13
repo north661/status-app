@@ -282,8 +282,8 @@ async def established_chat(request, test_environment) -> EstablishedChatContext:
 
     try:
         yield ctx
-        
-    except Exception as e:
+
+    except Exception:
         setup_failed = True
         raise
         
