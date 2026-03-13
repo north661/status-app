@@ -72,6 +72,8 @@ class EnvironmentConfig:
             self._validate_local()
         elif provider_name == "browserstack":
             self._validate_browserstack()
+        elif provider_name == "lambdatest":
+            self._validate_lambdatest()
 
     def _validate_local(self) -> None:
         server_url = self.provider.options.get("server_url", "http://localhost:4723")
@@ -107,6 +109,17 @@ class EnvironmentConfig:
             raise ConfigurationError(
                 "BrowserStack app id missing. Provide BROWSERSTACK_APP_ID or set"
                 " provider.options.app.app_id_template."
+            )
+
+    def _validate_lambdatest(self) -> None:
+        auth_cfg = self.provider.options.get("auth", {})
+        username = self.resolve_template(auth_cfg.get("username", ""))
+        access_key = self.resolve_template(auth_cfg.get("access_key", ""))
+
+        if not username or not access_key:
+            raise ConfigurationError(
+                "LambdaTest credentials missing. Set LT_USERNAME and "
+                "LT_ACCESS_KEY or provide overrides in config."
             )
 
     def resolve_template(self, template: Optional[str]) -> str:

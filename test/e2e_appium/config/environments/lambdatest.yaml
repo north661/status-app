@@ -1,0 +1,70 @@
+extends: "base.yaml"
+
+metadata:
+  name: "lambdatest"
+  description: "LambdaTest cloud environment for CI pipeline"
+
+provider:
+  name: "lambdatest"
+  options:
+    app:
+      source: "cloud_upload"
+      app_url_template: "${LT_APP_URL:-}"
+    auth:
+      username: "${LT_USERNAME:-}"
+      access_key: "${LT_ACCESS_KEY:-}"
+    build_name_template: "${LT_BUILD_NAME:-${GIT_COMMIT:-Status Mobile}}"
+    session_name_template: "${TEST_NAME:-${PYTEST_CURRENT_TEST:-Status Test}}"
+    project_name: "${LT_PROJECT_NAME:-Status E2E Appium}"
+    hub_url: "https://mobile-hub.lambdatest.com/wd/hub"
+    max_parallel_sessions: 5
+
+device_defaults:
+  capabilities:
+    platformName: "android"
+    automationName: "UiAutomator2"
+    newCommandTimeout: 300
+    lt:options:
+      video: true
+      console: true
+      network: false
+      devicelog: true
+    appium:unicodeKeyboard: true
+    appium:resetKeyboard: true
+
+devices:
+  default: "galaxy_tab_s9_android_14"
+  matrix:
+    - id: "galaxy_tab_s9_android_14"
+      display_name: "Galaxy Tab S9 - Android 14"
+      tags: ["android", "tablet", "cloud"]
+      capabilities:
+        platformVersion: "14"
+        deviceName: "Galaxy Tab S9"
+    - id: "pixel_8_android_14"
+      display_name: "Pixel 8 - Android 14"
+      tags: ["android", "phone", "cloud"]
+      capabilities:
+        platformName: "android"
+        platformVersion: "14"
+        deviceName: "Pixel 8"
+    - id: "pixel_7_android_13"
+      display_name: "Pixel 7 - Android 13"
+      tags: ["android", "phone", "cloud"]
+      capabilities:
+        platformName: "android"
+        platformVersion: "13"
+        deviceName: "Pixel 7"
+
+execution:
+  concurrency:
+    max_sessions: 5
+    per_device_limit: 2
+  retry_failed_tests: 1
+  pytest:
+    addopts: ["-n", "2"]
+
+logging:
+  level: "INFO"
+  enable_xml_report: true
+  enable_html_report: true

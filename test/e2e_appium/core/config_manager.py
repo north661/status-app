@@ -149,6 +149,12 @@ class EnvironmentSwitcher:
         if browserstack_creds_present and "browserstack" in available:
             return "browserstack"
 
+        lambdatest_creds_present = bool(
+            os.getenv("LT_USERNAME") and os.getenv("LT_ACCESS_KEY")
+        )
+        if lambdatest_creds_present and "lambdatest" in available:
+            return "lambdatest"
+
         try:
             import requests
 

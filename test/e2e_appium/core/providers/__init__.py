@@ -3,11 +3,13 @@ from typing import Type
 from ..environment import ConfigurationError, EnvironmentConfig
 from .base import Provider, SessionMetadata
 from .browserstack import BrowserStackProvider
+from .lambdatest import LambdaTestProvider
 from .local import LocalProvider
 
 _PROVIDER_REGISTRY = {
     "local": LocalProvider,
     "browserstack": BrowserStackProvider,
+    "lambdatest": LambdaTestProvider,
 }
 
 
