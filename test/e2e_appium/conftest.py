@@ -390,8 +390,8 @@ def pytest_runtest_makereport(item, call):
         except Exception as e:
             logger.warning("Failed to cleanup pool in hook: %s", e)
 
-        # Only report status for BrowserStack
-        if environment != "browserstack":
+        # Only report status for cloud providers
+        if environment not in ("browserstack", "lambdatest"):
             logger.debug("Skipping status reporting for environment: %s", environment)
             continue
 

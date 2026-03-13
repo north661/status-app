@@ -484,6 +484,42 @@ class TestMultiDeviceInfrastructure:
             await reserver.release(1)
             assert shared_counter.value == 0
 
+    def test_provider_registry_includes_lambdatest(self):
+        """Verify LambdaTestProvider is registered and returned by create_provider()."""
+        from core.environment import EnvironmentConfig, ProviderConfig, DeviceConfig
+        from core.providers import create_provider
+        from core.providers.lambdatest import LambdaTestProvider
+
+        env_config = EnvironmentConfig(
+            name="lambdatest",
+            description="LambdaTest test",
+            provider=ProviderConfig(
+                name="lambdatest",
+                options={
+                    "auth": {"username": "user", "access_key": "key"},
+                    "app": {"app_url_template": "lt://test"},
+                },
+            ),
+            execution={"concurrency": {"max_sessions": 1}},
+            timeouts={"default": 30},
+            logging={"level": "INFO"},
+            directories={"reports": "reports"},
+            device_defaults={"capabilities": {"platformName": "android"}},
+            devices={
+                "test": DeviceConfig(
+                    id="test",
+                    capabilities={
+                        "platformName": "android",
+                        "deviceName": "Pixel 8",
+                        "platformVersion": "14",
+                    },
+                )
+            },
+        )
+
+        provider = create_provider(env_config)
+        assert isinstance(provider, LambdaTestProvider)
+
     async def test_capacity_reserver_request_exceeds_plan_fails_fast(self, monkeypatch):
         import tempfile
         from pathlib import Path
