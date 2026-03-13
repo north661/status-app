@@ -1,0 +1,25 @@
+[tool.ruff]
+# Target Python 3.11 (matches CI and venv)
+target-version = "py311"
+
+# Default rule set: pyflakes (F) + pycodestyle errors (E)
+# This matches the pre-existing `ruff check .` baseline.
+lint.select = ["E", "F"]
+
+# E501 (line-too-long): not enforced — existing codebase has 320+ long lines.
+# Will be addressed incrementally via formatter adoption, not lint gating.
+lint.ignore = ["E501"]
+
+# Ignore E402 (module-level import not at top of file) in specific files
+# where the import ordering is intentional:
+#   - session_pool.py: TypeVar defined between import groups
+#   - fixtures/__init__.py: pytest.register_assert_rewrite() before imports
+lint.per-file-ignores."core/session_pool.py" = ["E402"]
+lint.per-file-ignores."fixtures/__init__.py" = ["E402"]
+
+# Exclude virtual environment and generated files
+exclude = [
+    ".venv",
+    "node_modules",
+    "reports",
+]
