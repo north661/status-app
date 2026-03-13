@@ -1,4 +1,5 @@
 import base64
+import time
 
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -144,25 +145,65 @@ class WalletLeftPanel(BasePage):
             self.logger.error("Failed to open add account modal")
             return False
         if not modal.set_name(name):
-            self.logger.error(f"Failed to set account name to '{name}'")
+            self.logger.error("Failed to set account name to '%s'", name)
             return False
         modal.save_changes()
 
+        return self._wait_for_add_account_result(modal, auth_password)
+
+    def _wait_for_add_account_result(
+        self,
+        modal: AddEditAccountModal,
+        auth_password: str | None,
+        timeout: int = 90,
+    ) -> bool:
+        """Poll until the add-account operation completes.
+
+        After clicking save the app may perform CPU-heavy key derivation
+        that blocks the Android accessibility tree for up to ~60 s on slow
+        BrowserStack devices.  Each find_element call can take ~20 s to
+        return a 500 error during this period, so short nominal timeouts
+        are meaningless.  This method uses a generous deadline and short
+        per-probe timeouts so it reacts quickly once the tree is available.
+        """
         auth_modal = KeycardAuthenticationModal(self.driver)
-        if not auth_modal.is_displayed(timeout=5):
-            if not modal.wait_until_hidden(timeout=5):
-                self.logger.error("Add account modal did not close and no authentication prompt appeared")
-                return False
-            return True
+        deadline = time.time() + timeout
+        diagnostics_captured = False
 
-        if not auth_password:
-            self.logger.error("Authentication required but no password provided")
-            return False
-        if not auth_modal.authenticate(auth_password):
-            self.logger.error("Failed to authenticate when adding account")
-            return False
+        while time.time() < deadline:
+            # Outcome 1: auth prompt appeared → authenticate
+            try:
+                if auth_modal.is_displayed(timeout=2):
+                    self.logger.info("Authentication prompt detected after save")
+                    if not auth_password:
+                        self.logger.error("Authentication required but no password provided")
+                        return False
+                    return auth_modal.authenticate(auth_password)
+            except Exception:
+                pass
 
-        return True
+            # Outcome 2: modal dismissed (account created without auth)
+            try:
+                if not modal.is_displayed(timeout=2):
+                    self.logger.info("Add-account modal dismissed; account created")
+                    return True
+            except Exception:
+                pass
+
+            # Capture diagnostics once midway through the wait so CI
+            # artifacts show the UI state during key derivation.
+            if not diagnostics_captured and time.time() > deadline - timeout + 30:
+                diagnostics_captured = True
+                self.logger.info("Capturing mid-wait diagnostics for add-account")
+                self.take_screenshot("add_account_mid_wait")
+                self.dump_page_source("add_account_mid_wait")
+
+            time.sleep(1.0)
+
+        self.logger.error("Add-account did not complete within %ss", timeout)
+        self.take_screenshot("add_account_timeout")
+        self.dump_page_source("add_account_timeout")
+        return False
 
     def account_rows(self) -> list[WebElement]:
         try:

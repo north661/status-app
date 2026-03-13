@@ -1,3 +1,5 @@
+import time
+
 from locators.wallet.accounts_locators import WalletAccountsLocators
 from utils.exceptions import ElementInteractionError
 
@@ -21,19 +23,28 @@ class KeycardAuthenticationModal(BasePage):
         return self.locators.KEYCARD_PASSWORD_INPUT
 
     def is_displayed(self, timeout: int = 5) -> bool:
-        field = self.find_element_safe(
-            self.locators.KEYCARD_PASSWORD_INPUT_FALLBACK, timeout=timeout
-        )
-        if not field:
-            field = self.find_element_safe(
-                self.locators.KEYCARD_PASSWORD_INPUT, timeout=1
-            )
-        if field:
-            try:
-                self.logger.debug("Keycard modal password field detected at %s", field.rect)
-            except Exception:
-                pass
-            return True
+        """Check whether the keycard authentication popup is visible.
+
+        Uses a single polling loop that tries both locators per iteration
+        so that a blocked accessibility tree (key derivation) doesn't
+        cause 2x sequential waits.
+        """
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            for locator in (
+                self.locators.KEYCARD_PASSWORD_INPUT_FALLBACK,
+                self.locators.KEYCARD_PASSWORD_INPUT,
+            ):
+                field = self.find_element_safe(locator, timeout=1)
+                if field:
+                    try:
+                        self.logger.debug(
+                            "Keycard modal password field detected at %s", field.rect
+                        )
+                    except Exception:
+                        pass
+                    return True
+            time.sleep(0.5)
         return False
 
     def authenticate(self, password: str, timeout: int = 15) -> bool:

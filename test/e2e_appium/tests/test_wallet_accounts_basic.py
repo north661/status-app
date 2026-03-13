@@ -12,6 +12,7 @@ class TestWalletAccountsBasic(StepMixin):
     @pytest.mark.wallet
     @pytest.mark.smoke
     @pytest.mark.timeout(900)
+    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_add_and_delete_generated_account(self):
         async with self.step(self.device, "Verify wallet panel loaded"):
             panel = WalletLeftPanel(self.device.driver)
