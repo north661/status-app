@@ -307,17 +307,19 @@ class BasePage:
                     )
 
                 element.clear()
+                time.sleep(0.1)
+                element.click()
 
-                self.driver.update_settings({
-                    "sendKeyStrategy": "oneByOne",
-                    "interKeyDelay": inter_key_delay,
-                })
                 actions = ActionChains(self.driver)
-                actions.send_keys(text).perform()
+                delay_seconds = inter_key_delay / 1000.0
+                for char in text:
+                    actions.send_keys(char)
+                    actions.pause(delay_seconds)
+                actions.perform()
 
                 if ElementStateChecker.is_password_field(element):
                     self.logger.debug("Password field detected - skipping verification")
-                    time.sleep(0.05 * len(text))
+                    time.sleep(max(0.5, 0.05 * len(text)))
                     return True
 
                 if not verify:
