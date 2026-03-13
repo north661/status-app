@@ -78,6 +78,32 @@ Tests run on `Samsung Galaxy Tab.*` with Android 12-16. Different devices have d
 
 BrowserStack sessions can die mid-test ("WebDriver session appears to be dead"). The messaging test fixture retries on ALL failures (not just connection errors) with fresh sessions.
 
+### Accessibility Tree Blocking During Crypto Operations
+
+Heavy cryptographic operations (Ethereum key derivation for wallet account creation, password re-encryption) run on the app's main UI thread and block the Android accessibility tree for **up to 60–80 seconds** on slower BrowserStack devices (e.g. Samsung Galaxy Tab S8 on Android 12).
+
+During this period:
+- Every UiAutomator2 `find_element` call returns HTTP 500 after ~20s: *"Timed out waiting for the root AccessibilityNodeInfo"*
+- Nominal Appium timeouts (e.g. `timeout=5`) are meaningless — a single failed probe consumes ~20s of wall-clock time
+- `driver.get_screenshot_as_base64()` and `driver.page_source` also fail (they use the same blocked tree)
+- After the blocking ends, the first few accessibility queries may return **stale or empty results** before the tree fully rebuilds
+
+**Patterns:**
+- Use a polling loop with a generous deadline (90s) and short per-probe timeouts (1–2s) so the method reacts quickly once the tree recovers. See `WalletLeftPanel._wait_for_add_account_result()`.
+- After detecting completion, call `_wait_for_accessibility_tree_stable()` before querying UI state (e.g. account row counts).
+- Capture diagnostic screenshots/page-source *after* the blocking period ends, not during — calls during the blocked period fail silently.
+- In tests, use `wait_for_condition()` instead of single-shot element queries when verifying UI state after crypto operations.
+- Always add `@pytest.mark.flaky(reruns=1)` to tests that trigger crypto operations as a CI safety net.
+
+### Keyboard Hide Failures on Qt/QML Apps
+
+`hide_keyboard()` frequently returns HTTP 500 on BrowserStack with Qt apps (*"The software keyboard cannot be hidden"*). This happens because Qt uses hardware keyboard input via ActionChains rather than the Android software keyboard, but `is_keyboard_shown()` can still return `true`.
+
+**Patterns:**
+- Never gate test logic on `hide_keyboard()` success — treat it as best-effort
+- After `hide_keyboard()` fails, tap a neutral screen area to defocus and scroll the target element into view
+- See `PasswordChangePage._dismiss_keyboard_for_submit()` for an example
+
 ## Test Patterns That Work
 
 ### Messaging Tests

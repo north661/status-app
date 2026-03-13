@@ -165,16 +165,21 @@ class WalletLeftPanel(BasePage):
         return a 500 error during this period, so short nominal timeouts
         are meaningless.  This method uses a generous deadline and short
         per-probe timeouts so it reacts quickly once the tree is available.
+
+        Once a completion outcome is detected the method captures a
+        diagnostic screenshot + page source (the driver is responsive at
+        that point) and waits briefly for the accessibility tree to
+        stabilise before returning.
         """
         auth_modal = KeycardAuthenticationModal(self.driver)
         deadline = time.time() + timeout
-        diagnostics_captured = False
 
         while time.time() < deadline:
             # Outcome 1: auth prompt appeared → authenticate
             try:
                 if auth_modal.is_displayed(timeout=2):
                     self.logger.info("Authentication prompt detected after save")
+                    self._capture_post_keygen_diagnostics("add_account_auth_prompt")
                     if not auth_password:
                         self.logger.error("Authentication required but no password provided")
                         return False
@@ -186,23 +191,48 @@ class WalletLeftPanel(BasePage):
             try:
                 if not modal.is_displayed(timeout=2):
                     self.logger.info("Add-account modal dismissed; account created")
+                    self._capture_post_keygen_diagnostics("add_account_dismissed")
+                    self._wait_for_accessibility_tree_stable()
                     return True
             except Exception:
                 pass
-
-            # Capture diagnostics once midway through the wait so CI
-            # artifacts show the UI state during key derivation.
-            if not diagnostics_captured and time.time() > deadline - timeout + 30:
-                diagnostics_captured = True
-                self.logger.info("Capturing mid-wait diagnostics for add-account")
-                self.take_screenshot("add_account_mid_wait")
-                self.dump_page_source("add_account_mid_wait")
 
             time.sleep(1.0)
 
         self.logger.error("Add-account did not complete within %ss", timeout)
         self.take_screenshot("add_account_timeout")
         self.dump_page_source("add_account_timeout")
+        return False
+
+    def _capture_post_keygen_diagnostics(self, label: str) -> None:
+        """Capture screenshot + page source after key derivation completes.
+
+        Diagnostics taken *during* the blocking period fail silently
+        because the Appium driver uses the same blocked accessibility
+        tree.  Capturing immediately after the tree becomes responsive
+        gives us useful CI artifacts.
+        """
+        self.take_screenshot(label)
+        self.dump_page_source(label)
+
+    def _wait_for_accessibility_tree_stable(self, timeout: int = 10) -> bool:
+        """Wait for the accessibility tree to return reliable results.
+
+        After a prolonged UI-thread block (key derivation), the first few
+        accessibility queries may return stale or empty results.  This
+        polls until account rows are visible, giving the tree time to
+        rebuild.
+        """
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            try:
+                rows = self.driver.find_elements(*self.locators.ACCOUNT_ROW_ANY)
+                if rows:
+                    return True
+            except Exception:
+                pass
+            time.sleep(1.0)
+        self.logger.warning("Accessibility tree did not stabilise within %ss", timeout)
         return False
 
     def account_rows(self) -> list[WebElement]:
