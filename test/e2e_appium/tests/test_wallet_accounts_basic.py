@@ -8,12 +8,24 @@ from utils.multi_device_helpers import StepMixin
 
 
 class TestWalletAccountsBasic(StepMixin):
+    """Tests for basic wallet account management via the wallet left panel.
+
+    Single-device test. Timeout is 900 s because account creation triggers
+    CPU-heavy key derivation that blocks the Android accessibility tree for
+    up to ~60 s on BrowserStack devices. Reruns=1 mitigates transient
+    BrowserStack queue/connection issues.
+    """
+
     @pytest.mark.gate
     @pytest.mark.wallet
     @pytest.mark.smoke
     @pytest.mark.timeout(900)
     @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_add_and_delete_generated_account(self):
+        """Add a generated wallet account, rename it, restart the app to
+        verify persistence, add a second account, then delete the renamed
+        account and verify removal via toast and list inspection.
+        """
         async with self.step(self.device, "Verify wallet panel loaded"):
             panel = WalletLeftPanel(self.device.driver)
             app = App(self.device.driver)

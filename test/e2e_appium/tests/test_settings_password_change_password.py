@@ -10,11 +10,22 @@ from utils.multi_device_helpers import StepMixin
 
 
 class TestSettingsPasswordChange(StepMixin):
+    """Tests for the Settings → Password change flow.
+
+    Single-device test. Reruns=2 because the password re-encryption
+    blocks the Android UI thread for up to ~80 s on BrowserStack,
+    making the flow susceptible to HTTP 500 / timeout flakes.
+    """
+
     @pytest.mark.gate
     @pytest.mark.critical
     @pytest.mark.smoke
     @pytest.mark.flaky(reruns=2, reruns_delay=5)
     async def test_change_password_and_login(self):
+        """Change the user password via Settings, wait for re-encryption
+        and automatic restart, then log in with the new password and
+        verify the wallet landing screen is visible.
+        """
         async with self.step(self.device, "Navigate to Settings"):
             app = App(self.device.driver)
             assert app.click_settings_left_nav(), "Failed to open Settings"

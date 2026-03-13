@@ -17,11 +17,23 @@ from utils.multi_device_helpers import StepMixin
 
 
 class TestOnboardingImportSeed(StepMixin):
+    """Tests for seed phrase import during onboarding.
+
+    Uses raw_devices (no automatic onboarding) because the test exercises
+    the onboarding flow itself. Single-device test.
+    """
+
     @pytest.mark.gate
     @pytest.mark.smoke
     @pytest.mark.onboarding
     @pytest.mark.raw_devices
     async def test_import_and_reimport_seed(self):
+        """Import a seed phrase, verify derived wallet address, then attempt
+        to re-import the same phrase on a second profile and verify rejection.
+
+        Covers: onboarding import, wallet address derivation, duplicate seed
+        detection on the returning-login path.
+        """
         driver = self.device.driver
         seed_phrase = generate_seed_phrase()
         password = "TestPassword123!"
