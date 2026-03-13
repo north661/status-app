@@ -10,11 +10,21 @@ from pages.wallet.saved_addresses_page import SavedAddressesPage
 
 
 class TestSavedAddresses(StepMixin):
+    """Tests for the Wallet → Saved Addresses feature.
+
+    Single-device tests exercising add and remove flows for saved
+    Ethereum addresses.
+    """
+
     @pytest.mark.wallet
     @pytest.mark.saved_addresses
     @pytest.mark.smoke
     @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_add_and_remove_saved_address(self):
+        """Add a saved address with a generated name and ETH address, verify
+        it appears in the list with a success toast, then delete it and
+        confirm removal.
+        """
         async with self.step(self.device, "Navigate to Saved Addresses"):
             app = App(self.device.driver)
             assert app.safe_click(AppLocators().LEFT_NAV_WALLET, timeout=6), (

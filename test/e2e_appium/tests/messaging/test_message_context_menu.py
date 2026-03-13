@@ -9,7 +9,6 @@ These tests use a module-scoped fixture that establishes a chat once,
 then all tests in this module share that session.
 """
 
-import asyncio
 import uuid
 from contextlib import asynccontextmanager
 
@@ -72,11 +71,10 @@ class TestMessageContextMenu:
         app.click_messages_button()
         chat_page.dismiss_backup_prompt(timeout=3)
 
-        # Allow the UI to settle after navigation (BrowserStack latency)
-        await asyncio.sleep(0.5)
-
-        # Check if message input appeared (we might already be in a chat)
-        if chat_page.wait_for_message_input(timeout=5):
+        # Check if message input appeared (we might already be in a chat).
+        # A slightly longer timeout absorbs BrowserStack navigation latency
+        # without a hard sleep.
+        if chat_page.wait_for_message_input(timeout=8):
             self.logger.info("Message input ready after navigation")
             return chat_page
         
@@ -138,9 +136,6 @@ class TestMessageContextMenu:
         self.logger.info("Navigating secondary to Messages tab")
         secondary_app.click_messages_button()
         secondary_chat.dismiss_backup_prompt(timeout=3)
-
-        # Allow the UI to settle after navigation (BrowserStack latency)
-        await asyncio.sleep(0.5)
 
         # Try to open chat with primary
         if hasattr(self, 'ctx') and self.ctx.primary_suffix:

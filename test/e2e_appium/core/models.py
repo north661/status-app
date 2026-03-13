@@ -10,6 +10,7 @@ class TestUser:
     password: str = DEFAULT_USER_PASSWORD
     seed_phrase: Optional[List[str]] = None
     wallet_address: Optional[str] = None
+    profile_link: Optional[str] = None
     source: str = "created"
 
     __test__ = False  # Prevent pytest from treating this helper as a test class
@@ -20,6 +21,7 @@ class TestUser:
             "password": self.password,
             "seed_phrase": self.seed_phrase,
             "wallet_address": self.wallet_address,
+            "profile_link": self.profile_link,
             "source": self.source,
         }
 
@@ -40,6 +42,7 @@ class TestUser:
             password=payload.get("password") or getattr(config, "custom_password", None) or DEFAULT_USER_PASSWORD,
             seed_phrase=seed_phrase,
             wallet_address=payload.get("wallet_address"),
+            profile_link=payload.get("profile_link"),
             source="onboarded",
         )
 

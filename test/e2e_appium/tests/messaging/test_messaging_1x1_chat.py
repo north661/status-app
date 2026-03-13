@@ -7,7 +7,6 @@ from pages.messaging.chat_page import ChatPage
 from pages.app import App
 from pages.settings.messaging_page import MessagingSettingsPage
 from pages.settings.settings_page import SettingsPage
-from pages.settings.contacts_page import ContactsSettingsPage
 from utils.multi_device_helpers import StepMixin
 
 

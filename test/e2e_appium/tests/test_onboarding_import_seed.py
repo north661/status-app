@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from pages.onboarding import (
@@ -11,7 +9,6 @@ from pages.onboarding import (
     SplashScreen,
 )
 from pages.base_page import BasePage
-from pages.app import App
 from locators.app_locators import AppLocators
 from locators.onboarding.wallet.wallet_locators import WalletLocators
 from locators.onboarding.returning_login_locators import ReturningLoginLocators
@@ -20,20 +17,33 @@ from utils.multi_device_helpers import StepMixin
 
 
 class TestOnboardingImportSeed(StepMixin):
+    """Tests for seed phrase import during onboarding.
+
+    Uses raw_devices (no automatic onboarding) because the test exercises
+    the onboarding flow itself. Single-device test.
+    """
+
     @pytest.mark.gate
     @pytest.mark.smoke
     @pytest.mark.onboarding
     @pytest.mark.raw_devices
     async def test_import_and_reimport_seed(self):
+        """Import a seed phrase, verify derived wallet address, then attempt
+        to re-import the same phrase on a second profile and verify rejection.
+
+        Covers: onboarding import, wallet address derivation, duplicate seed
+        detection on the returning-login path.
+        """
         driver = self.device.driver
         seed_phrase = generate_seed_phrase()
         password = "TestPassword123!"
 
         async with self.step(self.device, "Complete welcome screen"):
-            # Initial tap to dismiss any overlay
+            # Best-effort tap to dismiss any overlay before the welcome screen check.
+            # The subsequent is_screen_displayed(timeout=30) polls with retries,
+            # so no explicit sleep is needed here.
             try:
                 driver.tap([(500, 300)])
-                time.sleep(1)
             except Exception:
                 pass
 
@@ -76,7 +86,6 @@ class TestOnboardingImportSeed(StepMixin):
         async with self.step(self.device, "Verify wallet address"):
             wallet_locators = WalletLocators()
             base = BasePage(driver)
-            app = App(driver)
             app_locators = AppLocators()
 
             base.safe_click(app_locators.LEFT_NAV_WALLET, timeout=5)
