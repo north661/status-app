@@ -121,7 +121,7 @@ class ProfileCreationFlow:
                     raise ProfileCreationFlowError("Failed to skip analytics")
                 action = "skipped"
             else:
-                if not self.analytics_page.enable_analytics_sharing():
+                if not self.analytics_page.accept_analytics_sharing():
                     raise ProfileCreationFlowError("Failed to enable analytics")
                 action = "enabled"
 
