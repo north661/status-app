@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from pages.onboarding import (
@@ -29,10 +27,11 @@ class TestOnboardingImportSeed(StepMixin):
         password = "TestPassword123!"
 
         async with self.step(self.device, "Complete welcome screen"):
-            # Initial tap to dismiss any overlay
+            # Best-effort tap to dismiss any overlay before the welcome screen check.
+            # The subsequent is_screen_displayed(timeout=30) polls with retries,
+            # so no explicit sleep is needed here.
             try:
                 driver.tap([(500, 300)])
-                time.sleep(1)
             except Exception:
                 pass
 
