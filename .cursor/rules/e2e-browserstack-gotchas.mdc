@@ -90,10 +90,16 @@ During this period:
 
 **Patterns:**
 - Use a polling loop with a generous deadline (90s) and short per-probe timeouts (1–2s) so the method reacts quickly once the tree recovers. See `WalletLeftPanel._wait_for_add_account_result()`.
-- After detecting completion, call `_wait_for_accessibility_tree_stable()` before querying UI state (e.g. account row counts).
+- **Never treat "element not found" as "element dismissed"** during/after blocking. The accessibility tree may return empty results, dicts instead of WebElements, or stale data. Always require **positive confirmation** of the expected post-operation UI state (e.g. check that `ADD_ACCOUNT_BUTTON` is visible to confirm the wallet panel is back, rather than checking that the modal is absent). See `_is_wallet_panel_visible()`.
 - Capture diagnostic screenshots/page-source *after* the blocking period ends, not during — calls during the blocked period fail silently.
 - In tests, use `wait_for_condition()` instead of single-shot element queries when verifying UI state after crypto operations.
 - Always add `@pytest.mark.flaky(reruns=1)` to tests that trigger crypto operations as a CI safety net.
+
+### Appium Serialisation Bug During Accessibility Recovery
+
+When the accessibility tree is recovering from a prolonged block, `find_element` may return a raw `dict` instead of a `WebElement`. The `BasePage.find_element_safe()` guard catches this (`"find_element_safe got dict instead of WebElement"`), but code that checks `is_displayed()` or `is_element_visible()` will get `False` — not because the element is absent, but because the driver returned corrupt data.
+
+**Pattern:** Never infer "element absent" from a single negative probe during or immediately after a crypto operation. Use positive-confirmation checks instead.
 
 ### Keyboard Hide Failures on Qt/QML Apps
 

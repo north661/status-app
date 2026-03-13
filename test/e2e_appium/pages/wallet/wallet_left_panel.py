@@ -166,10 +166,11 @@ class WalletLeftPanel(BasePage):
         are meaningless.  This method uses a generous deadline and short
         per-probe timeouts so it reacts quickly once the tree is available.
 
-        Once a completion outcome is detected the method captures a
-        diagnostic screenshot + page source (the driver is responsive at
-        that point) and waits briefly for the accessibility tree to
-        stabilise before returning.
+        IMPORTANT: "modal not found" does NOT mean "modal dismissed".
+        During recovery the accessibility tree returns garbage (dicts
+        instead of WebElements, empty results).  We require *positive*
+        confirmation via the wallet panel's ADD_ACCOUNT_BUTTON before
+        concluding the modal is gone.
         """
         auth_modal = KeycardAuthenticationModal(self.driver)
         deadline = time.time() + timeout
@@ -187,12 +188,12 @@ class WalletLeftPanel(BasePage):
             except Exception:
                 pass
 
-            # Outcome 2: modal dismissed (account created without auth)
+            # Outcome 2: modal truly dismissed — require positive proof
+            # that the wallet panel is back, not just "modal not found".
             try:
-                if not modal.is_displayed(timeout=2):
-                    self.logger.info("Add-account modal dismissed; account created")
+                if self._is_wallet_panel_visible():
+                    self.logger.info("Add-account modal dismissed; wallet panel visible")
                     self._capture_post_keygen_diagnostics("add_account_dismissed")
-                    self._wait_for_accessibility_tree_stable()
                     return True
             except Exception:
                 pass
@@ -204,6 +205,10 @@ class WalletLeftPanel(BasePage):
         self.dump_page_source("add_account_timeout")
         return False
 
+    def _is_wallet_panel_visible(self) -> bool:
+        """Quick check that the main wallet panel is back (no modal overlay)."""
+        return self.is_element_visible(self.locators.ADD_ACCOUNT_BUTTON, timeout=2)
+
     def _capture_post_keygen_diagnostics(self, label: str) -> None:
         """Capture screenshot + page source after key derivation completes.
 
@@ -214,26 +219,6 @@ class WalletLeftPanel(BasePage):
         """
         self.take_screenshot(label)
         self.dump_page_source(label)
-
-    def _wait_for_accessibility_tree_stable(self, timeout: int = 10) -> bool:
-        """Wait for the accessibility tree to return reliable results.
-
-        After a prolonged UI-thread block (key derivation), the first few
-        accessibility queries may return stale or empty results.  This
-        polls until account rows are visible, giving the tree time to
-        rebuild.
-        """
-        deadline = time.time() + timeout
-        while time.time() < deadline:
-            try:
-                rows = self.driver.find_elements(*self.locators.ACCOUNT_ROW_ANY)
-                if rows:
-                    return True
-            except Exception:
-                pass
-            time.sleep(1.0)
-        self.logger.warning("Accessibility tree did not stabilise within %ss", timeout)
-        return False
 
     def account_rows(self) -> list[WebElement]:
         try:
