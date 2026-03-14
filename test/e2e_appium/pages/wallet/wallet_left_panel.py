@@ -155,16 +155,17 @@ class WalletLeftPanel(BasePage):
         self,
         modal: AddEditAccountModal,
         auth_password: str | None,
-        timeout: int = 90,
+        timeout: int = 180,
     ) -> bool:
         """Poll until the add-account operation completes.
 
         After clicking save the app may perform CPU-heavy key derivation
-        that blocks the Android accessibility tree for up to ~60 s on slow
-        BrowserStack devices.  Each find_element call can take ~20 s to
-        return a 500 error during this period, so short nominal timeouts
-        are meaningless.  This method uses a generous deadline and short
-        per-probe timeouts so it reacts quickly once the tree is available.
+        that blocks the Android accessibility tree for 100-140 s on slow
+        BrowserStack devices (e.g. Galaxy Tab S8 / Android 12).  Each
+        find_element call can take ~20 s to return a 500 error during this
+        period because UiAutomator2 waits for the root AccessibilityNodeInfo.
+        With a 90 s deadline only ~3 probes fit, which is not enough.
+        180 s allows the tree to recover and at least 2-3 probes to succeed.
 
         IMPORTANT: "modal not found" does NOT mean "modal dismissed".
         During recovery the accessibility tree returns garbage (dicts
