@@ -150,6 +150,7 @@ class TestMessageContextMenu:
                 )
                 if attempt < 2:
                     continue
+                break  # skip futile waits, fall through to AssertionError
             secondary_chat.dismiss_backup_prompt(timeout=3)
 
             # Try to open chat with primary
@@ -377,7 +378,6 @@ class TestMessageContextMenu:
 
     @pytest.mark.gate
     @pytest.mark.smoke
-    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_verify_reaction_on_message(self) -> None:
         """Verify that a reaction appears on the message and syncs to both devices.
 
