@@ -40,6 +40,7 @@ device_defaults:
     orientation: "LANDSCAPE"
     appium:unicodeKeyboard: true
     appium:resetKeyboard: true
+    appium:ignoreHiddenApiPolicyError: true
 
 
 devices:

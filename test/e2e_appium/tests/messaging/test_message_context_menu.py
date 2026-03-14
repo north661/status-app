@@ -120,42 +120,67 @@ class TestMessageContextMenu:
 
     async def _ensure_secondary_in_chat(self) -> ChatPage:
         """Ensure secondary device is in the chat with primary.
-        
+
         The fixture establishes the chat, but secondary may have navigated away.
         This ensures secondary is viewing the same conversation as primary.
+
+        Navigation is retried once on failure because BrowserStack devices
+        occasionally have transient accessibility-tree delays after the
+        primary device triggers a reaction or message sync.
         """
         secondary_chat = ChatPage(self.ctx.secondary.driver)
         secondary_app = App(self.ctx.secondary.driver)
-        
+
         # Check if already in chat with message visible
-        if secondary_chat.is_element_visible(secondary_chat.locators.MESSAGE_INPUT, timeout=2):
+        if secondary_chat.is_element_visible(secondary_chat.locators.MESSAGE_INPUT, timeout=3):
             self.logger.info("Secondary already in chat")
             return secondary_chat
-        
-        # Navigate to messages
-        self.logger.info("Navigating secondary to Messages tab")
-        secondary_app.click_messages_button()
-        secondary_chat.dismiss_backup_prompt(timeout=3)
 
-        # Try to open chat with primary
-        if hasattr(self, 'ctx') and self.ctx.primary_suffix:
-            primary_name = None
-            if self.ctx.primary.user:
-                primary_name = self.ctx.primary.user.display_name
-            
-            if secondary_chat.open_chat_by_suffix(
-                self.ctx.primary_suffix,
-                display_name=primary_name,
-            ):
+        for attempt in range(1, 3):
+            self.logger.info(
+                "Navigating secondary to Messages tab (attempt %d/2)", attempt
+            )
+
+            if not secondary_app.click_messages_button():
+                self.logger.warning(
+                    "click_messages_button returned False (attempt %d)", attempt
+                )
+                secondary_chat.take_screenshot(
+                    f"secondary_nav_fail_attempt{attempt}"
+                )
+                if attempt < 2:
+                    continue
+            secondary_chat.dismiss_backup_prompt(timeout=3)
+
+            # Try to open chat with primary
+            if hasattr(self, 'ctx') and self.ctx.primary_suffix:
+                primary_name = None
+                if self.ctx.primary.user:
+                    primary_name = self.ctx.primary.user.display_name
+
+                if secondary_chat.open_chat_by_suffix(
+                    self.ctx.primary_suffix,
+                    display_name=primary_name,
+                ):
+                    if secondary_chat.wait_for_message_input(timeout=self.UI_TIMEOUT):
+                        self.logger.info("Secondary opened chat with primary")
+                        return secondary_chat
+
+            # Fallback: open first chat
+            if secondary_chat.open_first_chat(timeout=self.UI_TIMEOUT):
                 if secondary_chat.wait_for_message_input(timeout=self.UI_TIMEOUT):
-                    self.logger.info("Secondary opened chat with primary")
+                    self.logger.info("Secondary opened first chat (fallback)")
                     return secondary_chat
-        
-        # Fallback: open first chat
-        if secondary_chat.open_first_chat(timeout=self.UI_TIMEOUT):
-            secondary_chat.wait_for_message_input(timeout=self.UI_TIMEOUT)
-        
-        return secondary_chat
+
+            self.logger.warning(
+                "Secondary navigation attempt %d failed", attempt
+            )
+            secondary_chat.take_screenshot(f"secondary_chat_fail_attempt{attempt}")
+
+        raise AssertionError(
+            "Could not navigate secondary device to chat. "
+            "See secondary_chat_fail screenshots for diagnostics."
+        )
 
     @pytest.mark.gate
     @pytest.mark.smoke
@@ -352,6 +377,7 @@ class TestMessageContextMenu:
 
     @pytest.mark.gate
     @pytest.mark.smoke
+    @pytest.mark.flaky(reruns=1, reruns_delay=5)
     async def test_verify_reaction_on_message(self) -> None:
         """Verify that a reaction appears on the message and syncs to both devices.
 

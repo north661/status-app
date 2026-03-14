@@ -357,7 +357,7 @@ class SessionPool:
                     f"Failed to create session for device_index {device_index}: {e}"
                 ) from e
 
-        # Simple retry for queue errors (single retry with fixed delay)
+        # Retry for transient BrowserStack errors (queue full, device allocation)
         try:
             return await self._run_in_executor(loop, _create)
         except SessionManagementError as e:
@@ -366,14 +366,22 @@ class SessionPool:
                 "queue" in error_message or
                 "browserstack_queue_size_exceeded" in error_message
             )
+            is_device_error = (
+                "more than one device" in error_message
+                or "hidden api policy" in error_message
+                or "could not start mobile browser" in error_message
+            )
 
-            if is_queue_error:
+            if is_queue_error or is_device_error:
+                delay = 15 if is_device_error else 5
                 self.logger.warning(
-                    "Queue error on device %d, retrying after 5s: %s",
+                    "%s error on device %d, retrying after %ds: %s",
+                    "Device allocation" if is_device_error else "Queue",
                     device_index,
+                    delay,
                     e,
                 )
-                await asyncio.sleep(5)
+                await asyncio.sleep(delay)
                 return await self._run_in_executor(loop, _create)
             raise
 

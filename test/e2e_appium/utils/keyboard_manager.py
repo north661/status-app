@@ -46,6 +46,18 @@ class KeyboardManager:
             except Exception as e:
                 self.logger.debug(f"Swipe gesture failed: {e}")
 
+            # Last resort: Android back button often dismisses the keyboard
+            try:
+                self.driver.press_keycode(4)  # KEYCODE_BACK
+                time.sleep(delay)
+                if not self.driver.is_keyboard_shown():
+                    self.logger.info("Keyboard hidden using Android back button")
+                    return True
+                else:
+                    self.logger.debug("Back button pressed but keyboard still visible")
+            except Exception as e:
+                self.logger.debug(f"Back button fallback failed: {e}")
+
             self.logger.warning("All keyboard hiding strategies failed")
             return False
 
